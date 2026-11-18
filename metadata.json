@@ -1,0 +1,6 @@
+{
+  "name": "MILE-DEV",
+  "description": "Enterprise Project Management and Engineering Workflow Admin Dashboard built with React, TypeScript, Redux Toolkit, and TanStack Query.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
