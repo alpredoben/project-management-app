@@ -48,7 +48,7 @@ async function tryRefreshAccessToken(): Promise<string | null> {
 }
 
 export interface RequestOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   body?: unknown;
   skipAuth?: boolean;
   signal?: AbortSignal;
@@ -60,11 +60,13 @@ export async function httpRequest<T>(
 ): Promise<In_ApiEnvelope<T>> {
   const { method = 'GET', body, skipAuth = false, signal } = options;
 
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+
   const makeHeaders = (token: string | null): HeadersInit => {
     const headers: Record<string, string> = {
       Accept: 'application/json',
     };
-    if (body !== undefined) {
+    if (body !== undefined && !isFormData) {
       headers['Content-Type'] = 'application/json';
     }
     if (!skipAuth && token) {
@@ -79,7 +81,7 @@ export async function httpRequest<T>(
   let response = await fetch(url, {
     method,
     headers: makeHeaders(currentToken),
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: isFormData ? (body as FormData) : body !== undefined ? JSON.stringify(body) : undefined,
     signal,
   });
 
@@ -89,7 +91,7 @@ export async function httpRequest<T>(
       response = await fetch(url, {
         method,
         headers: makeHeaders(refreshedToken),
-        body: body !== undefined ? JSON.stringify(body) : undefined,
+        body: isFormData ? (body as FormData) : body !== undefined ? JSON.stringify(body) : undefined,
         signal,
       });
     }

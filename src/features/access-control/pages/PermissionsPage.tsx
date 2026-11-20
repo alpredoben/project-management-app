@@ -219,8 +219,7 @@ export function PermissionsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Permissions"
-        description="Define granular capability rules and module-level authorization permissions."
-        apiPrefix="/api/v1/permission · list · create · find/:id · update/:id · delete/:id"
+        description="Authorization permissions at the module level"
         actions={
           <Button variant="primary" onClick={openCreateModal}>
             <Plus className="h-4 w-4" />

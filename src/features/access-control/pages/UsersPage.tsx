@@ -178,7 +178,7 @@ export function UsersPage() {
   const columns: DataTableColumn<In_User>[] = [
     {
       key: "user_name",
-      header: "User",
+      header: "Full Name",
       render: (row) => (
         <div>
           <p className="font-medium text-slate-900 dark:text-slate-100">
@@ -187,9 +187,20 @@ export function UsersPage() {
         </div>
       ),
     },
+     {
+      key: "user_name",
+      header: "Nip",
+      render: (row) => (
+        <div>
+          <p className="font-medium text-slate-900 dark:text-slate-100">
+            {row.nip}
+          </p>
+        </div>
+      ),
+    },
     {
       key: "user_email",
-      header: "User",
+      header: "Email",
       render: (row) => (
         <div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -200,7 +211,7 @@ export function UsersPage() {
     },
     {
       key: "user_phone",
-      header: "User",
+      header: "Phone",
       render: (row) => (
         <div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -235,7 +246,7 @@ export function UsersPage() {
     },
     {
       key: "user_email_status",
-      header: "Status",
+      header: "Verified",
       render: (row) => (
         <span
           className={
@@ -295,8 +306,7 @@ export function UsersPage() {
     <div className="space-y-6">
       <PageHeader
         title="User Directory"
-        description="Manage engineering user accounts, inspect user payloads, and assign RBAC roles."
-        apiPrefix="/api/v1/user · list · create · find/:id · update/:id · delete/:id · :id/insert-roles"
+        description="Manage user accounts, inspect user payloads, and assign roles."
         actions={
           <Button variant="primary" onClick={openCreateModal}>
             <Plus className="h-4 w-4" />
@@ -316,6 +326,7 @@ export function UsersPage() {
         searchFilter={(row, q) =>
           row.name.toLowerCase().includes(q) ||
           row.email.toLowerCase().includes(q) ||
+          row.nip.includes(q) ||
           row.phone_number.toLowerCase().includes(q)
         }
         emptyTitle="No users found"
@@ -332,8 +343,8 @@ export function UsersPage() {
         title={editingUser ? "Update User" : "Create User"}
         description={
           editingUser
-            ? `[PUT] ${getApiUrl(API_ENDPOINTS.USER.UPDATE(editingUser.id))}`
-            : `[POST] ${getApiUrl(API_ENDPOINTS.USER.CREATE)}`
+            ? `Update account of user ${editingUser.name}`
+            : 'Create new user account'
         }
         footer={
           <>
@@ -378,14 +389,14 @@ export function UsersPage() {
             {...register("email")}
           />
           <Input
-            label="Job title"
+            label="Phone Number"
             error={errors.phone_number?.message}
             required
             {...register("phone_number")}
           />
           {!editingUser && (
             <Input
-              label="Initial password"
+              label="Password"
               type="password"
               placeholder="Defaults to Password123! if empty"
               error={errors.password?.message}

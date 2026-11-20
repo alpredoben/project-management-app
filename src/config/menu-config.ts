@@ -75,6 +75,21 @@ export const ADMIN_MENU_GROUPS: readonly In_AdminMenuGroup[] = [
     ],
   },
   {
+    id: 'workspace-group',
+    label: 'Workspace',
+    items: [
+      {
+        id: 'workspace',
+        label: 'Workspace',
+        path: '/admin/workspace',
+        title: 'Workspaces',
+        description: 'Organize engineering workspaces, team collaborations, and brand logos.',
+        icon: 'workspaces',
+        apiPrefix: '/api/v1/workspace',
+      },
+    ],
+  },
+  {
     id: 'access-control',
     label: 'Access Control',
     items: [
@@ -104,6 +119,30 @@ export const ADMIN_MENU_GROUPS: readonly In_AdminMenuGroup[] = [
         description: 'Configure capability keys and module-level access policies.',
         icon: 'permissions',
         apiPrefix: '/api/v1/permission',
+      },
+    ],
+  },
+  {
+    id: 'master-data',
+    label: 'Master Data',
+    items: [
+      {
+        id: 'project-type',
+        label: 'Project Type',
+        path: '/admin/project-type',
+        title: 'Project Type',
+        description: 'Manage master data project type.',
+        icon: 'project-types',
+        apiPrefix: '/api/v1/project-types',
+      },
+      {
+        id: 'project-status',
+        label: 'Project Status',
+        path: '/admin/project-status',
+        title: 'Project Status',
+        description: 'Manage master data project status lifecycle.',
+        icon: 'project-statuses',
+        apiPrefix: '/api/v1/project-status',
       },
     ],
   }

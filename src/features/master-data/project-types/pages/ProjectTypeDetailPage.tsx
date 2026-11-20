@@ -1,0 +1,237 @@
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  ArrowLeft,
+  CalendarClock,
+  CircleAlert,
+  FolderKanban,
+  Tag,
+  FileText,
+} from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { projectTypeApi } from '../api';
+import { formatDate } from '@/shared/libs/helper';
+
+// ─── Detail Field ────────────────────────────────────────────────────────────
+
+function DetailField({
+  icon,
+  label,
+  value,
+  mono = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex items-start gap-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-white/2.5">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+          {label}
+        </p>
+        <p
+          className={`mt-1 break-all text-sm font-medium text-gray-900 dark:text-white/90 ${mono ? 'font-mono' : ''}`}
+        >
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Skeleton Loader ─────────────────────────────────────────────────────────
+
+function SkeletonField() {
+  return (
+    <div className="flex items-start gap-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-white/[0.025]">
+      <div className="h-9 w-9 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
+      <div className="flex-1 space-y-2">
+        <div className="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+        <div className="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
+export function ProjectTypeDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const findQuery = projectTypeApi.query.useProjectTypeFind(id ?? null);
+
+  const goBack = () => navigate('/admin/project-type');
+
+  // ── Missing ID guard ──────────────────────────────────────────────────────
+  if (!id) {
+    return (
+      <div className="space-y-5">
+        <PageHeader
+          title="Project Type Detail"
+          description="View detailed information about a project type."
+        />
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+          The project type ID is missing from the URL.
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-3"
+            onClick={goBack}
+          >
+            Back to list
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Loading state ─────────────────────────────────────────────────────────
+  if (findQuery.isLoading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Project Type Detail"
+          description="Loading project type information..."
+          actions={
+            <Button variant="outline" onClick={goBack}>
+              <ArrowLeft className="h-4 w-4" />
+              Back to list
+            </Button>
+          }
+        />
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/[0.02]">
+            <div className="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+          </div>
+          <div className="grid gap-4 p-6 sm:grid-cols-2">
+            {[0, 1, 2, 3].map((i) => (
+              <SkeletonField key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Error state ───────────────────────────────────────────────────────────
+  if (findQuery.error || !findQuery.data) {
+    return (
+      <div className="space-y-5">
+        <PageHeader
+          title="Project Type Detail"
+          description="View detailed information about a project type."
+          actions={
+            <Button variant="outline" onClick={goBack}>
+              <ArrowLeft className="h-4 w-4" />
+              Back to list
+            </Button>
+          }
+        />
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-900/50 dark:bg-red-950/30">
+          <div className="flex items-start gap-3 text-red-700 dark:text-red-300">
+            <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
+            <div className="min-w-0">
+              <p className="font-semibold">Unable to load project type</p>
+              <p className="mt-1 break-words text-sm">
+                {findQuery.error?.message ?? 'The record could not be found.'}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void findQuery.refetch()}
+                >
+                  Retry
+                </Button>
+                <Button variant="outline" size="sm" onClick={goBack}>
+                  Back to list
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Data ──────────────────────────────────────────────────────────────────
+  const data = findQuery.data;
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Project Type Detail"
+        description="Detailed view of a project type record retrieved via REST API."
+        actions={
+          <Button variant="outline" onClick={goBack}>
+            <ArrowLeft className="h-4 w-4" />
+            Back to list
+          </Button>
+        }
+      />
+
+      {/* Hero Card */}
+      <section className="relative overflow-hidden rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 via-white to-indigo-50 p-6 shadow-sm dark:border-brand-900/50 dark:from-brand-950/40 dark:via-gray-900 dark:to-indigo-950/30">
+        <div className="pointer-events-none absolute -right-10 -top-14 h-44 w-44 rounded-full bg-brand-300/20 blur-3xl" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-lg shadow-brand-500/25">
+              <FolderKanban className="h-7 w-7" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 dark:text-brand-300">
+                Project Type
+              </p>
+              <h2 className="mt-1 font-mono text-2xl font-bold text-gray-900 dark:text-white/90">
+                {data.name}
+              </h2>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {data.description ?? 'No description provided.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Detail Fields */}
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/[0.02]">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
+            Record Information
+          </h3>
+        </div>
+        <div className="grid gap-4 p-6 sm:grid-cols-2">
+          <DetailField
+            icon={<Tag className="h-4 w-4" />}
+            label="Name"
+            value={data.name}
+            mono
+          />
+          <DetailField
+            icon={<FileText className="h-4 w-4" />}
+            label="Description"
+            value={data.description ?? '—'}
+          />
+          <DetailField
+            icon={<CalendarClock className="h-4 w-4" />}
+            label="Created At"
+            value={formatDate(new Date(data.created_at).toLocaleString())}
+            mono
+          />
+          <DetailField
+            icon={<CalendarClock className="h-4 w-4" />}
+            label="Updated At"
+            value={formatDate(new Date(data.updated_at).toLocaleString())}
+            mono
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

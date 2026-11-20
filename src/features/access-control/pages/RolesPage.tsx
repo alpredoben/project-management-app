@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -22,11 +23,13 @@ import { RecordInspectorDrawer } from '@/components/ui/RecordInspectorDrawer';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
 import type { In_Role, T_SortOrder } from '@/types/api-type';
-import {roleAccessApi, permissionAccessApi} from '../api/access-control-api';
+import { roleAccessApi } from '../api/access-control-api';
 import { SchemaValidateAccess, type FormPayloadAccess } from '../schemas/access-control-schema';
+import { formatDate } from '@/shared/libs/helper';
 
 export function RolesPage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   // Search
   const [searchInput, setSearchInput] = useState('');
@@ -41,8 +44,6 @@ export function RolesPage() {
   const [editingRole, setEditingRole] = useState<In_Role | null>(null);
   const [inspectId, setInspectId] = useState<string | null>(null);
   const [deletingRole, setDeletingRole] = useState<In_Role | null>(null);
-  const [permTargetRole, setPermTargetRole] = useState<In_Role | null>(null);
-  const [selectedPermissionIds, setSelectedPermissionIds] = useState<string[]>([]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -60,21 +61,12 @@ export function RolesPage() {
     order_by: orderBy,
   });
 
-  const permissionsQuery = permissionAccessApi.query.usePermissionsList({
-    page: 1,
-    limit: 200,
-    sort_by: 'name',
-    order_by: 'ASC',
-  });
-
   // Query and Mutation
   const createMutation = roleAccessApi.mutation.useCreateRole();
   const updateMutation = roleAccessApi.mutation.useUpdateRole();
   const deleteMutation = roleAccessApi.mutation.useDeleteRole();
-  const insertPermsMutation = roleAccessApi.mutation.useInsertRolePermissions();
 
   const findQuery = roleAccessApi.query.useRoleFind(inspectId);
-  const permRoleDetailQuery = roleAccessApi.query.useRoleFind(permTargetRole?.id ?? null);
 
   const {
     register,
@@ -102,8 +94,7 @@ export function RolesPage() {
   };
 
   const openPermsModal = (role: In_Role) => {
-    setSelectedPermissionIds([]);
-    setPermTargetRole(role);
+    navigate(`/admin/roles/${role.id}/permissions`);
   };
 
   const onSubmit = async (values: FormPayloadAccess['Role']) => {
@@ -162,38 +153,6 @@ export function RolesPage() {
     }
   };
 
-  const handleSavePermissions = async () => {
-    if (!permTargetRole) return;
-    try {
-      const updated = await insertPermsMutation.mutateAsync({
-        id: permTargetRole.id,
-        permissionIds: selectedPermissionIds,
-      });
-      dispatch(
-        pushToast({
-          title: 'Permissions updated',
-          description: `Mapped ${updated.permissions.length} permissions to ${updated.name}.`,
-          variant: 'success',
-        }),
-      );
-      setPermTargetRole(null);
-    } catch (err) {
-      dispatch(
-        pushToast({
-          title: 'Permission update failed',
-          description: err instanceof Error ? err.message : 'Unable to assign permissions.',
-          variant: 'error',
-        }),
-      );
-    }
-  };
-
-  const togglePermission = (id: string) => {
-    setSelectedPermissionIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
-  };
-
   const roles = rolesQuery.data?.items ?? [];
   const pagination = rolesQuery.data?.pagination ?? null;
 
@@ -203,7 +162,7 @@ export function RolesPage() {
       header: 'Role',
       render: (row) => (
         <div>
-          <p className="font-mono text-gray-900 dark:text-white/90">
+          <p className="font-mono text-sm font-medium text-gray-900 dark:text-white/90">
           {row.name}
           </p>
         </div>
@@ -211,10 +170,10 @@ export function RolesPage() {
     },
     {
       key: 'slug',
-      header: 'Role',
+      header: 'Slug',
       render: (row) => (
         <div>
-          <p className="font-mono text-xs text-gray-500 dark:text-gray-400">
+          <p className="font-mono text-sm font-bold text-gray-900 dark:text-white/90">
             {row.slug}
           </p>
         </div>
@@ -224,7 +183,7 @@ export function RolesPage() {
       key: 'description',
       header: 'Description',
       render: (row) => (
-        <p className="max-w-md truncate text-xs text-gray-600 dark:text-gray-300">
+        <p className="max-w-md truncate text-sm font-medium text-gray-900 dark:text-white/90">
           {row.description ?? '—'}
         </p>
       ),
@@ -235,7 +194,7 @@ export function RolesPage() {
       align: 'right',
       render: (row) => (
         <span className="font-mono text-xs tabular-nums text-gray-500 dark:text-gray-400">
-          {new Date(row.updated_at).toLocaleString()}
+          {formatDate(new Date(row.updated_at).toLocaleString())}
         </span>
       ),
     },
@@ -252,7 +211,7 @@ export function RolesPage() {
             variant="ghost"
             size="sm"
             onClick={() => openPermsModal(row)}
-            title="Insert permissions"
+            title="Manage permissions"
           >
             <KeyRound className="h-3.5 w-3.5" />
           </Button>
@@ -272,7 +231,6 @@ export function RolesPage() {
       <PageHeader
         title="Roles"
         description="Configure RBAC role definitions and assign granular capability permissions."
-        apiPrefix="/api/v1/role · list · create · find/:id · update/:id · delete/:id · :id/insert-permissions"
         actions={
           <Button variant="primary" onClick={openCreateModal}>
             <Plus className="h-4 w-4" />
@@ -401,8 +359,8 @@ export function RolesPage() {
         title={editingRole ? 'Update Role' : 'Create Role'}
         description={
           editingRole
-            ? `PUT /api/v1/role/update/${editingRole.id}`
-            : 'POST /api/v1/role/create'
+            ? `Update role ${editingRole.name}`
+            : 'Create new role'
         }
         footer={
           <>
@@ -440,75 +398,6 @@ export function RolesPage() {
             {...register('description')}
           />
         </form>
-      </Modal>
-
-      <Modal
-        isOpen={Boolean(permTargetRole)}
-        onClose={() => setPermTargetRole(null)}
-        title={`Insert Permissions — ${permTargetRole?.name ?? ''}`}
-        description={
-          permTargetRole ? `PUT /api/v1/role/${permTargetRole.id}/insert-permissions` : ''
-        }
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setPermTargetRole(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => void handleSavePermissions()}
-              disabled={permRoleDetailQuery.isLoading}
-              isLoading={insertPermsMutation.isPending}
-            >
-              Save Permissions ({selectedPermissionIds.length})
-            </Button>
-          </>
-        }
-      >
-        {permRoleDetailQuery.isLoading ? (
-          <div className="space-y-2.5">
-            {Array.from({ length: 4 }).map((_, idx) => (
-              <div key={idx} className="h-14 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
-            ))}
-          </div>
-        ) : permRoleDetailQuery.error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
-            <p className="font-medium">Failed to load current role permissions</p>
-            <p className="mt-1">{permRoleDetailQuery.error.message}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3"
-              onClick={() => void permRoleDetailQuery.refetch()}
-            >
-              Retry
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-2.5">
-            {(permissionsQuery.data?.items ?? []).map((perm) => (
-              <label
-                key={perm.id}
-                className="flex items-start gap-3 rounded-xl border border-gray-200 p-3 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.03] cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedPermissionIds.includes(perm.id)}
-                  onChange={() => togglePermission(perm.id)}
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                />
-                <div>
-                  <p className="font-mono text-sm font-medium text-gray-900 dark:text-white/90">
-                    {perm.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {perm.module} · {perm.description ?? '—'}
-                  </p>
-                </div>
-              </label>
-            ))}
-          </div>
-        )}
       </Modal>
 
       <RecordInspectorDrawer

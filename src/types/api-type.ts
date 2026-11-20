@@ -114,11 +114,10 @@ export interface In_PermissionSummary {
   description: string | null;
 }
 
+
 export interface In_Permission extends In_PermissionSummary {
   created_at: string;
   updated_at: string;
-  created_by?: string | null;
-  updated_by?: string | null;
 }
 
 export interface In_RoleSummary {
@@ -131,12 +130,12 @@ export interface In_RoleSummary {
 export interface In_Role extends In_RoleSummary {
   created_at: string;
   updated_at: string;
-  created_by?: string | null;
-  updated_by?: string | null;
 }
 
 export interface In_RoleDetail extends In_Role {
-  permissions: In_Permission[],
+  created_at: string;
+  updated_at: string;
+  permissions: In_PermissionSummary[],
 }
 
 export interface In_User {
@@ -156,3 +155,30 @@ export interface In_User {
 }
 
 export type WorkspaceVisibility = 'private' | 'internal' | 'public';
+
+export interface In_ProjectType {
+  id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface In_ProjectStatus {
+  id: string;
+  name: string;
+  color_code: string;
+  description: string | null;
+  sequence_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface In_Workspace {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+  created_at: string;
+  updated_at: string;
+}

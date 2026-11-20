@@ -69,9 +69,58 @@ export const WebPages = {
       default: m.RolesPage,
     })),
   ),
+  RolePermissions: lazy(() =>
+    import("@/features/access-control/pages/RolePermissionsPage").then((m) => ({
+      default: m.RolePermissionsPage,
+    })),
+  ),
   Permissions: lazy(() =>
     import("@/features/access-control/pages/PermissionsPage").then((m) => ({
       default: m.PermissionsPage,
+    })),
+  ),
+
+  ProjectType: lazy(() =>
+    import("@/features/master-data/project-types/pages/ProjectTypePage").then(
+      (m) => ({
+        default: m.ProjectTypePage,
+      }),
+    ),
+  ),
+
+  ProjectTypeDetail: lazy(() =>
+    import(
+      "@/features/master-data/project-types/pages/ProjectTypeDetailPage"
+    ).then((m) => ({
+      default: m.ProjectTypeDetailPage,
+    })),
+  ),
+
+  ProjectStatus: lazy(() =>
+    import(
+      "@/features/master-data/project-status/pages/ProjectStatusPage"
+    ).then((m) => ({
+      default: m.ProjectStatusPage,
+    })),
+  ),
+
+  ProjectStatusDetail: lazy(() =>
+    import(
+      "@/features/master-data/project-status/pages/ProjectStatusDetailPage"
+    ).then((m) => ({
+      default: m.ProjectStatusDetailPage,
+    })),
+  ),
+
+  Workspace: lazy(() =>
+    import("@/features/workspace/pages/WorkspacePage").then((m) => ({
+      default: m.WorkspacePage,
+    })),
+  ),
+
+  WorkspaceDetail: lazy(() =>
+    import("@/features/workspace/pages/WorkspaceDetailPage").then((m) => ({
+      default: m.WorkspaceDetailPage,
     })),
   ),
 };
@@ -82,6 +131,10 @@ const ADMIN_ROUTE_COMPONENTS: Record<string, ComponentType> = {
   users: WebPages.Users,
   roles: WebPages.Roles,
   permissions: WebPages.Permissions,
+  "project-type": WebPages.ProjectType,
+  "project-status": WebPages.ProjectStatus,
+  workspace: WebPages.Workspace,
+  workspaces: WebPages.Workspace,
 };
 
 
@@ -89,6 +142,22 @@ function DocumentTitleSync() {
   const location = useLocation();
 
   useEffect(() => {
+    if (/^\/admin\/roles\/[^/]+\/permissions$/.test(location.pathname)) {
+      document.title = "Role Permissions — MILE-DEV";
+      return;
+    }
+    if (/^\/admin\/project-type\/[^/]+$/.test(location.pathname)) {
+      document.title = "Project Type Detail — MILE-DEV";
+      return;
+    }
+    if (/^\/admin\/project-status\/[^/]+$/.test(location.pathname)) {
+      document.title = "Project Status Detail — MILE-DEV";
+      return;
+    }
+    if (/^\/admin\/workspaces?\/[^/]+$/.test(location.pathname)) {
+      document.title = "Workspace Detail — MILE-DEV";
+      return;
+    }
     const publicMatch = PUBLIC_ROUTES.find((r) => r.path === location.pathname);
     if (publicMatch) {
       document.title = `${publicMatch.title} — MILE-DEV`;
@@ -123,6 +192,26 @@ export function AppRouter() {
 
         {/* Private Admin Dashboard Routes (driven by menu-config.ts) */}
         <Route element={<PrivateRouteGuard />}>
+          <Route
+            path="/admin/roles/:id/permissions"
+            element={<WebPages.RolePermissions />}
+          />
+          <Route
+            path="/admin/project-type/:id"
+            element={<WebPages.ProjectTypeDetail />}
+          />
+          <Route
+            path="/admin/project-status/:id"
+            element={<WebPages.ProjectStatusDetail />}
+          />
+          <Route
+            path="/admin/workspace/:id"
+            element={<WebPages.WorkspaceDetail />}
+          />
+          <Route
+            path="/admin/workspaces/:id"
+            element={<WebPages.WorkspaceDetail />}
+          />
           {getAllAdminMenuItems().map((item) => {
             const PageComponent = ADMIN_ROUTE_COMPONENTS[item.id];
             if (!PageComponent) return null;

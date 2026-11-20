@@ -10,7 +10,7 @@ import type {
   In_User,
 } from "@/types/api-type";
 import {
-  roleDetailSchema,
+  findRoleDetailSchema,
   SchemaValidateAccess,
   type FormPayloadAccess,
   type In_PermissionMutationPayload,
@@ -32,6 +32,7 @@ export const accessControlKeys = {
   permissions: ["permissions"] as const,
   permissionsList: (params?: In_QueryParam) =>
     ["permissions", "list", params ?? {}] as const,
+  permissionGroups: ["permissions", "groups"] as const,
   permissionDetail: (id: string) => ["permissions", "detail", id] as const,
 };
 
@@ -183,8 +184,12 @@ export const roleAccessApi = {
             }
           }
           const endpoint = `${API_ENDPOINTS.ROLE.LIST}${query.size ? `?${query}` : ""}`;
-          const res = await httpRequest<unknown>(getApiUrl(endpoint), { signal });
-          const items = z.array(SchemaValidateAccess.roleItem).parse(res.data);
+          const res = await httpRequest<unknown>(getApiUrl(endpoint), {
+            signal,
+          });
+          const items = z
+            .array(SchemaValidateAccess.roleDetail)
+            .parse(res.data);
           const pagination = res.meta?.pagination
             ? SchemaValidateAccess.paginationMeta.parse(res.meta.pagination)
             : null;
@@ -196,10 +201,13 @@ export const roleAccessApi = {
     },
     useRoleFind: (id: string | null) => {
       return useQuery({
-        queryKey: accessControlKeys.roleDetail(id ?? ''),
+        queryKey: accessControlKeys.roleDetail(id ?? ""),
         queryFn: async ({ signal }): Promise<In_RoleDetail> => {
-          const res = await httpRequest<unknown>(getApiUrl(API_ENDPOINTS.ROLE.FIND(id)), { signal });
-          return roleDetailSchema.parse(res.data);
+          const res = await httpRequest<unknown>(
+            getApiUrl(API_ENDPOINTS.ROLE.FIND(id)),
+            { signal },
+          );
+          return findRoleDetailSchema.parse(res.data);
         },
         enabled: Boolean(id),
       });
@@ -209,12 +217,18 @@ export const roleAccessApi = {
     useCreateRole: () => {
       const qc = useQueryClient();
       return useMutation({
-        mutationFn: async (values: FormPayloadAccess['Role']): Promise<In_Role> => {
-          const res = await httpRequest<unknown>('/role/create', {
-            method: 'POST',
-            body: toRoleMutationPayload(values),
-          });
-          return SchemaValidateAccess.roleItem.parse(res.data);
+        mutationFn: async (
+          values: FormPayloadAccess["Role"],
+        ): Promise<In_Role> => {
+          const res = await httpRequest<unknown>(
+            getApiUrl(API_ENDPOINTS.ROLE.CREATE),
+            {
+              method: "POST",
+              body: toRoleMutationPayload(values),
+            },
+          );
+          const result = SchemaValidateAccess.roleDetail.parse(res.data);
+          return result;
         },
         onSuccess: () => {
           void qc.invalidateQueries({ queryKey: accessControlKeys.roles });
@@ -275,10 +289,10 @@ export const roleAccessApi = {
             getApiUrl(API_ENDPOINTS.ROLE.INSERT_PERMISSIONS(id)),
             {
               method: "PUT",
-              body: { permission_ids: permissionIds },
+              body: permissionIds,
             },
           );
-          return roleDetailSchema.parse(res.data);
+          return findRoleDetailSchema.parse(res.data);
         },
         onSuccess: (_data, vars) => {
           void qc.invalidateQueries({ queryKey: accessControlKeys.roles });
@@ -304,6 +318,37 @@ const toPermissionMutationPayload = (
 
 export const permissionAccessApi = {
   query: {
+    usePermissionGroups: () => {
+      return useQuery({
+        queryKey: accessControlKeys.permissionGroups,
+        queryFn: async ({ signal }) => {
+          const res = await httpRequest<unknown>(
+            getApiUrl(API_ENDPOINTS.PERMISSION.LIST_GROUP),
+            { signal },
+          );
+          return z
+            .array(
+              z.object({
+                module_name: z.string(),
+                permission_items: z.array(
+                  z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    description: z
+                      .string()
+                      .nullable()
+                      .optional()
+                      .transform((value) => value ?? null),
+                    created_at: z.string(),
+                    updated_at: z.string(),
+                  }),
+                ),
+              }),
+            )
+            .parse(res.data);
+        },
+      });
+    },
     usePermissionsList: (params?: In_QueryParam) => {
       return useQuery({
         queryKey: accessControlKeys.permissionsList(params),
@@ -325,7 +370,7 @@ export const permissionAccessApi = {
             { signal },
           );
           const items = z
-            .array(SchemaValidateAccess.permissionItem)
+            .array(SchemaValidateAccess.permissionDetail)
             .parse(res.data);
           const pagination = res.meta?.pagination
             ? SchemaValidateAccess.paginationMeta.parse(res.meta.pagination)
@@ -346,7 +391,7 @@ export const permissionAccessApi = {
               signal,
             },
           );
-          return SchemaValidateAccess.permissionItem.parse(res.data);
+          return SchemaValidateAccess.permissionDetail.parse(res.data);
         },
         enabled: Boolean(id),
       });
@@ -366,7 +411,7 @@ export const permissionAccessApi = {
               body: toPermissionMutationPayload(values),
             },
           );
-          return SchemaValidateAccess.permissionItem.parse(res.data);
+          return SchemaValidateAccess.permissionDetail.parse(res.data);
         },
         onSuccess: () => {
           void qc.invalidateQueries({
@@ -393,7 +438,7 @@ export const permissionAccessApi = {
               body: toPermissionMutationPayload(values),
             },
           );
-          return SchemaValidateAccess.permissionItem.parse(res.data);
+          return SchemaValidateAccess.permissionDetail.parse(res.data);
         },
         onSuccess: (_data, vars) => {
           void qc.invalidateQueries({
