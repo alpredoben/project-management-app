@@ -1,4 +1,6 @@
+import type { In_AdminRouteNode } from '@/types/menu-type';
 import dayjs from 'dayjs';
+import { lazy, type ComponentType } from 'react';
 
 export const getLocalStorage = (key: string): string | null => {
     return window.localStorage.getItem(key);
@@ -26,3 +28,16 @@ export const getStorageUrl = (path?: string | null): string => {
   const cleanPath = path.replace(/^\/+/, '');
   return `${baseUrl}/${cleanPath}`;
 }
+
+export function lazyPage<M extends Record<string, unknown>>(
+  loader: () => Promise<M>,
+  exportName: keyof M & string,
+) {
+  return lazy(() =>
+    loader().then((m) => ({ default: m[exportName] as ComponentType })),
+  );
+}
+
+
+export const getFlatten = (nodes: readonly In_AdminRouteNode[]): In_AdminRouteNode[] =>
+  nodes.flatMap((node) => [node, ...getFlatten(node.items)]);

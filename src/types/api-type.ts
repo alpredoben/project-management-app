@@ -182,3 +182,14 @@ export interface In_Workspace {
   created_at: string;
   updated_at: string;
 }
+
+
+export interface In_TaskStatus  {
+  id: string;
+  name: string;
+  color_code: string;
+  description: string | null;
+  sequence_order: number;
+  created_at: string;
+  updated_at: string;
+}

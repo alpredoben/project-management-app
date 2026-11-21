@@ -23,7 +23,7 @@ export const SchemaValidateProjectStatus = {
       .default(""),
     description: z.string().min(2, "Description is required"),
     sequence_order: z.coerce
-      .number({ invalid_type_error: "No. Order must be a valid number" })
+      .number({ error: "No. Order must be a valid number" })
       .int("No. Order must be an integer")
       .min(0, "No. Order must be at least 0"),
   }),

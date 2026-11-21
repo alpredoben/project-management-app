@@ -132,13 +132,13 @@ function SidebarNavItem({ item, collapsed, onNavigate }: SidebarNavItemProps) {
               : 'px-3 py-2.5 gap-3 w-full',
             isActive
               ? [
-                  'bg-gradient-to-r from-brand-500 to-brand-600 text-white',
+                  'bg-linear-to-r from-brand-500 to-brand-600 text-white',
                   'shadow-lg shadow-brand-500/25 dark:shadow-brand-500/20',
                   'font-semibold',
                 ]
               : [
                   'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80',
-                  'dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/[0.06]',
+                  'dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/6',
                   !collapsed && 'hover:translate-x-1',
                 ],
           )
@@ -194,7 +194,7 @@ function SidebarNavItem({ item, collapsed, onNavigate }: SidebarNavItemProps) {
         >
           <div className="font-semibold">{item.label}</div>
           {item.description && (
-            <div className="text-[10px] text-gray-400 dark:text-gray-400 font-normal max-w-[180px] truncate">
+            <div className="text-[10px] text-gray-400 dark:text-gray-400 font-normal max-w-45 truncate">
               {item.description}
             </div>
           )}
@@ -257,24 +257,40 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   // ── Mobile Sidebar Open/Close Smooth Transitions ───────────────────────────
   useEffect(() => {
+    let openFrame1: number | undefined;
+    let openFrame2: number | undefined;
+
     if (isSidebarOpen) {
-      setMobileVisible(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setMobileAnimating(true));
+      openFrame1 = requestAnimationFrame(() => {
+        setMobileVisible(true);
+        openFrame2 = requestAnimationFrame(() => setMobileAnimating(true));
       });
     } else {
-      setMobileAnimating(false);
+      const closeFrame = requestAnimationFrame(() => setMobileAnimating(false));
       const timer = window.setTimeout(() => setMobileVisible(false), 300);
-      return () => window.clearTimeout(timer);
+
+      return () => {
+        cancelAnimationFrame(closeFrame);
+        window.clearTimeout(timer);
+      };
     }
+
+    return () => {
+      if (openFrame1 !== undefined) cancelAnimationFrame(openFrame1);
+      if (openFrame2 !== undefined) cancelAnimationFrame(openFrame2);
+    };
   }, [isSidebarOpen]);
 
   // ── Close dropdowns on route changes ───────────────────────────────────────
   useEffect(() => {
-    setIsSearchOpen(false);
-    setIsUserMenuOpen(false);
-    setIsNotificationsOpen(false);
-    setMenuQuery('');
+    const frame = requestAnimationFrame(() => {
+      setIsSearchOpen(false);
+      setIsUserMenuOpen(false);
+      setIsNotificationsOpen(false);
+      setMenuQuery('');
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [location.pathname]);
 
   // ── Keyboard Shortcuts & Outside Clicks ────────────────────────────────────
@@ -387,7 +403,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             className="flex items-center gap-3 group/brand shrink-0"
           >
             {/* Glowing Brand Icon */}
-            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-indigo-500 text-white shadow-md shadow-brand-500/25 transition-transform duration-300 group-hover/brand:scale-105">
+            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-600 via-brand-500 to-indigo-500 text-white shadow-md shadow-brand-500/25 transition-transform duration-300 group-hover/brand:scale-105">
               <Layers className="h-5 w-5" />
               {/* Online pulse dot */}
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -489,7 +505,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {/* ── Sidebar Footer / User Profile ─────────────────────────────── */}
         <div className="shrink-0 border-t border-gray-100 p-3 dark:border-gray-800/80">
           {!collapsed ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-gray-50/80 p-2.5 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800/60">
+            <div className="flex items-center gap-3 rounded-2xl bg-gray-50/80 p-2.5 dark:bg-white/3 border border-gray-100 dark:border-gray-800/60">
               {/* Avatar */}
               {user?.avatar_url ? (
                 <img
@@ -498,7 +514,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   className="h-9 w-9 shrink-0 rounded-xl object-cover ring-2 ring-brand-500/20"
                 />
               ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-brand-500/20">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-brand-500/20">
                   {userInitials}
                 </div>
               )}
@@ -552,7 +568,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           'sticky top-0 h-screen z-30',
           'border-r border-gray-200/70 bg-white dark:border-gray-800/80 dark:bg-[#0f1117]',
           'transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
-          isSidebarCollapsed ? 'lg:w-[76px]' : 'lg:w-[264px]',
+          isSidebarCollapsed ? 'lg:w-19' : 'lg:w-66',
         )}
       >
         {renderSidebar(false)}
@@ -578,7 +594,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {/* Drawer container */}
           <aside
             className={cn(
-              'relative z-10 h-full w-[272px] flex flex-col',
+              'relative z-10 h-full w-68 flex flex-col',
               'border-r border-gray-200/80 bg-white dark:border-gray-800 dark:bg-[#0f1117]',
               'shadow-2xl shadow-gray-950/30',
               'transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
@@ -613,7 +629,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 'hidden lg:flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl',
                 'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
                 'hover:border-brand-200 hover:bg-brand-50/50 hover:text-brand-600',
-                'dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400',
+                'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400',
                 'dark:hover:border-brand-800 dark:hover:bg-brand-500/10 dark:hover:text-brand-300',
                 'transition-all duration-150',
               )}
@@ -633,7 +649,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               className={cn(
                 'flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl lg:hidden',
                 'border border-gray-200/80 bg-white text-gray-500',
-                'hover:bg-gray-100 hover:text-gray-800 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.05]',
+                'hover:bg-gray-100 hover:text-gray-800 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5',
                 'transition-colors',
               )}
             >
@@ -666,7 +682,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   'border border-gray-200/80 bg-gray-50/70 text-gray-800 placeholder:text-gray-400',
                   'transition-all duration-200 ease-out',
                   'focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/10',
-                  'dark:border-gray-800 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-gray-500',
+                  'dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-gray-500',
                   'dark:focus:border-brand-500 dark:focus:bg-[#0f1117] dark:focus:ring-brand-500/20',
                 )}
               />
@@ -730,7 +746,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               )}
                             >
                               <span className="flex min-w-0 items-center gap-3">
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-white/[0.05] dark:text-gray-300">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300">
                                   <Icon className="h-4 w-4" />
                                 </span>
                                 <span className="min-w-0">
@@ -768,7 +784,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 'hidden sm:flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl',
                 'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
                 'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800',
-                'dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400 dark:hover:bg-white/[0.05] dark:hover:text-white',
+                'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white',
                 'transition-all duration-150',
               )}
             >
@@ -790,7 +806,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   'relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl',
                   'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
                   'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800',
-                  'dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400 dark:hover:bg-white/[0.05] dark:hover:text-white',
+                  'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white',
                   'transition-all duration-150',
                   isNotificationsOpen &&
                     'border-brand-300 bg-brand-50/50 text-brand-600 dark:border-brand-800 dark:bg-brand-500/10 dark:text-brand-300',
@@ -847,7 +863,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 'flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl',
                 'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
                 'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800',
-                'dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400 dark:hover:bg-white/[0.05] dark:hover:text-white',
+                'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white',
                 'transition-all duration-300',
               )}
             >
@@ -871,10 +887,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 className={cn(
                   'flex cursor-pointer items-center gap-2.5 rounded-xl p-1 sm:pr-2.5',
                   'border border-transparent hover:border-gray-200/80 hover:bg-gray-50/80',
-                  'dark:hover:border-gray-800 dark:hover:bg-white/[0.04]',
+                  'dark:hover:border-gray-800 dark:hover:bg-white/4',
                   'transition-all duration-150',
                   isUserMenuOpen &&
-                    'border-gray-200/80 bg-gray-50/80 dark:border-gray-800 dark:bg-white/[0.04]',
+                    'border-gray-200/80 bg-gray-50/80 dark:border-gray-800 dark:bg-white/4',
                 )}
               >
                 {/* Avatar with Status Ring */}
@@ -886,7 +902,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       className="h-8 w-8 shrink-0 rounded-xl object-cover ring-2 ring-brand-500/30"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-brand-500/20">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-brand-500/20">
                       {userInitials}
                     </div>
                   )}
@@ -895,7 +911,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
                 {/* Name */}
                 <div className="hidden sm:block text-left leading-tight">
-                  <p className="max-w-[120px] truncate text-xs font-semibold text-gray-800 dark:text-gray-200">
+                  <p className="max-w-30 truncate text-xs font-semibold text-gray-800 dark:text-gray-200">
                     {user?.name ?? 'User'}
                   </p>
                   <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500">
@@ -923,7 +939,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   )}
                 >
                   {/* Top user badge */}
-                  <div className="bg-gradient-to-br from-brand-50/80 via-white to-indigo-50/60 p-4 dark:from-brand-950/40 dark:via-gray-900 dark:to-indigo-950/30 border-b border-gray-100 dark:border-gray-800/60">
+                  <div className="bg-linear-to-br from-brand-50/80 via-white to-indigo-50/60 p-4 dark:from-brand-950/40 dark:via-gray-900 dark:to-indigo-950/30 border-b border-gray-100 dark:border-gray-800/60">
                     <div className="flex items-center gap-3">
                       {user?.avatar_url ? (
                         <img
@@ -932,7 +948,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           className="h-10 w-10 shrink-0 rounded-xl object-cover ring-2 ring-white dark:ring-gray-800 shadow-sm"
                         />
                       ) : (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 text-sm font-bold text-white shadow-md shadow-brand-500/20">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-500 to-indigo-600 text-sm font-bold text-white shadow-md shadow-brand-500/20">
                           {userInitials}
                         </div>
                       )}
@@ -961,7 +977,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       onClick={() => setIsUserMenuOpen(false)}
                       className={cn(
                         'flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium',
-                        'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.05]',
+                        'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5',
                         'transition-colors duration-150',
                       )}
                     >
@@ -977,7 +993,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       onClick={() => setIsUserMenuOpen(false)}
                       className={cn(
                         'flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium',
-                        'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.05]',
+                        'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5',
                         'transition-colors duration-150',
                       )}
                     >

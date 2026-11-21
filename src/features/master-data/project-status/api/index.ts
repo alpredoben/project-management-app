@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { httpRequest } from "@/shared/libs/http";
-import type { In_PaginatedResult, In_QueryParam } from "@/types/api-type";
+import type { In_PaginatedResult, In_ProjectStatus, In_QueryParam } from "@/types/api-type";
 import { API_ENDPOINTS, getApiUrl } from "@/config/api-config";
 import {
   SchemaValidateProjectStatus,
@@ -9,17 +9,7 @@ import {
   type In_ProjectStatusMutationPayload,
 } from "../schemas";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 
-export type In_ProjectStatus = {
-  id: string;
-  name: string;
-  color_code: string;
-  description: string | null;
-  sequence_order: number;
-  created_at: string;
-  updated_at: string;
-};
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 

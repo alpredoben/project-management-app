@@ -20,9 +20,9 @@ import { Modal } from '@/components/ui/Modal';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
-import type { T_SortOrder } from '@/types/api-type';
+import type { In_ProjectStatus, T_SortOrder } from '@/types/api-type';
 import { formatDate } from '@/shared/libs/helper';
-import { projectStatusApi, type In_ProjectStatus } from '../api';
+import { projectStatusApi } from '../api';
 import {
   SchemaValidateProjectStatus,
   type FormPayloadProjectStatus,
@@ -86,7 +86,7 @@ export function ProjectStatusPage() {
     setValue,
     formState: { errors },
   } = useForm<FormPayloadProjectStatus['ProjectStatus']>({
-    resolver: zodResolver(SchemaValidateProjectStatus.projectStatus),
+    resolver: zodResolver(SchemaValidateProjectStatus.projectStatus) as never,
     defaultValues: {
       name: '',
       color_code: '#3B82F6',
@@ -454,7 +454,9 @@ export function ProjectStatusPage() {
       >
         <form
           id="project-status-form"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit((values) =>
+            onSubmit(values as unknown as FormPayloadProjectStatus['ProjectStatus']),
+          )}
           className="space-y-4"
         >
           <Input
