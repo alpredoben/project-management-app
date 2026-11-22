@@ -4,7 +4,6 @@ import {
   Check,
   CheckCircle2,
   CircleAlert,
-  Code2,
   Copy,
   FileText,
   Globe,
@@ -53,17 +52,17 @@ function DetailField({
 }) {
   return (
     <div
-      className={`flex items-start gap-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-white/[0.025] ${className}`}
+      className={`flex items-start gap-3.5 rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 sm:p-4 dark:border-gray-800 dark:bg-white/[0.025] ${className}`}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
           {label}
         </p>
         <div
-          className={`mt-1 break-words text-sm font-medium text-gray-900 dark:text-white/90 ${
+          className={`mt-1 text-sm font-medium text-gray-900 dark:text-white/90 ${
             mono ? 'font-mono' : ''
           }`}
         >
@@ -78,11 +77,11 @@ function DetailField({
 
 function SkeletonField() {
   return (
-    <div className="flex items-start gap-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4 dark:border-gray-800 dark:bg-white/[0.025]">
+    <div className="flex items-start gap-3.5 rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 sm:p-4 dark:border-gray-800 dark:bg-white/[0.025]">
       <div className="h-9 w-9 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
       <div className="flex-1 space-y-2">
-        <div className="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
-        <div className="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+        <div className="h-3 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+        <div className="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
       </div>
     </div>
   );
@@ -126,7 +125,7 @@ function formatKeyLabel(key: string): string {
 function getFieldIcon(key: string): ReactNode {
   const lower = key.toLowerCase();
 
-  if (lower === 'id') return <Hash className="h-4 w-4" />;
+  if (lower === 'id' || lower.endsWith('_id')) return <Hash className="h-4 w-4" />;
   if (lower.includes('name') || lower === 'title') return <Tag className="h-4 w-4" />;
   if (lower === 'nip' || lower === 'user' || lower === 'username') return <User className="h-4 w-4" />;
   if (lower.includes('email')) return <Mail className="h-4 w-4" />;
@@ -156,7 +155,12 @@ function getFieldIcon(key: string): ReactNode {
 
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
-function formatFieldValue(key: string, value: unknown): { content: ReactNode; mono?: boolean; isLong?: boolean } {
+function formatFieldValue(
+  key: string,
+  value: unknown,
+  onCopyField?: (text: string) => void,
+  isCopied?: boolean,
+): { content: ReactNode; mono?: boolean; isLong?: boolean } {
   if (value === null || value === undefined || value === '') {
     return { content: <span className="text-gray-400 font-normal">—</span> };
   }
@@ -180,7 +184,9 @@ function formatFieldValue(key: string, value: unknown): { content: ReactNode; mo
 
   // Number
   if (typeof value === 'number') {
-    return { content: value, mono: true };
+    return {
+      content: <span className="tabular-nums font-semibold">{value}</span>,
+    };
   }
 
   // Arrays (e.g., roles, permissions, role_ids, tags)
@@ -219,7 +225,11 @@ function formatFieldValue(key: string, value: unknown): { content: ReactNode; mo
     return {
       isLong: true,
       mono: true,
-      content: JSON.stringify(value, null, 2),
+      content: (
+        <pre className="max-h-40 overflow-auto rounded-lg bg-gray-100/80 p-2.5 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      ),
     };
   }
 
@@ -229,38 +239,79 @@ function formatFieldValue(key: string, value: unknown): { content: ReactNode; mo
   // Hex Color
   if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(str)) {
     return {
-      mono: true,
       content: (
         <div className="flex items-center gap-2">
           <span
-            className="h-4 w-4 rounded-md border border-black/10 dark:border-white/20 shadow-xs"
+            className="h-4 w-4 rounded-md border border-black/10 dark:border-white/20 shadow-xs shrink-0"
             style={{ backgroundColor: str }}
           />
-          <span>{str}</span>
+          <span className="font-mono text-xs">{str}</span>
         </div>
       ),
     };
   }
 
-  // ISO Dates
+  // ISO Dates -> Readable human date, NOT monospace
   if (ISO_DATE_REGEX.test(str)) {
     return {
-      mono: true,
-      content: formatDate(new Date(str).toLocaleString()),
+      content: (
+        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+          {formatDate(new Date(str).toLocaleString())}
+        </span>
+      ),
     };
   }
 
-  // Identifiers / slugs
-  const isMono =
+  // UUID or Primary Key (ID)
+  const isId =
     key.toLowerCase() === 'id' ||
-    key.toLowerCase() === 'slug' ||
     key.toLowerCase().endsWith('_id') ||
-    str.length === 36; // UUID
+    (str.length === 36 && str.includes('-'));
+
+  if (isId) {
+    return {
+      isLong: true, // Always span full width in drawer to prevent wrapping into 3 lines
+      content: (
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-mono text-xs font-medium text-gray-800 dark:text-gray-200 select-all break-all">
+            {str}
+          </span>
+          {onCopyField && (
+            <button
+              type="button"
+              onClick={() => onCopyField(str)}
+              className="inline-flex shrink-0 items-center gap-1 rounded-md p-1 text-gray-400 hover:bg-gray-200/60 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
+              title="Copy ID"
+            >
+              {isCopied ? (
+                <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <Copy className="h-3.5 w-3.5" />
+              )}
+            </button>
+          )}
+        </div>
+      ),
+    };
+  }
+
+  // Slug
+  if (key.toLowerCase() === 'slug') {
+    return {
+      content: (
+        <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 font-mono text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200/80 dark:border-gray-700/60">
+          {str}
+        </span>
+      ),
+    };
+  }
+
+  // Long text / descriptions
+  const isLong = str.length > 35 || str.includes('\n');
 
   return {
-    content: str,
-    mono: isMono,
-    isLong: str.length > 50,
+    content: <span className="break-words">{str}</span>,
+    isLong,
   };
 }
 
@@ -275,13 +326,12 @@ export function RecordInspectorDrawer({
   record,
   endpoint,
 }: RecordInspectorDrawerProps) {
-  const [copied, setCopied] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  const handleCopyRaw = () => {
-    if (!record) return;
-    navigator.clipboard.writeText(JSON.stringify(record, null, 2)).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const handleCopyField = (text: string, fieldKey: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedKey(fieldKey);
+      setTimeout(() => setCopiedKey(null), 2000);
     });
   };
 
@@ -295,10 +345,10 @@ export function RecordInspectorDrawer({
       {isLoading ? (
         <div className="space-y-4">
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xs dark:border-gray-800 dark:bg-gray-900">
-            <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/[0.02]">
+            <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/2">
               <div className="h-4 w-36 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
             </div>
-            <div className="grid gap-3 p-5 sm:grid-cols-2">
+            <div className="grid gap-3.5 p-5 sm:grid-cols-2">
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <SkeletonField key={i} />
               ))}
@@ -311,7 +361,7 @@ export function RecordInspectorDrawer({
             <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
             <div className="min-w-0">
               <p className="font-semibold text-sm">Unable to load record detail</p>
-              <p className="mt-1 break-words text-xs text-red-600 dark:text-red-400">
+              <p className="mt-1 wrap-break-word text-xs text-red-600 dark:text-red-400">
                 {error.message}
               </p>
             </div>
@@ -321,26 +371,35 @@ export function RecordInspectorDrawer({
         <div className="space-y-5">
           {/* Record Information Card (matching ProjectTypeDetailPage) */}
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xs dark:border-gray-800 dark:bg-gray-900">
-            <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/[0.02]">
+            <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/2">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
                 Record Information
               </h3>
             </div>
 
             {recordEntries.length > 0 ? (
-              <div className="grid gap-3 p-5 sm:grid-cols-2">
+              <div className="grid gap-3.5 p-5 sm:grid-cols-2">
                 {recordEntries.map(([key, val]) => {
-                  const { content, mono, isLong } = formatFieldValue(key, val);
-                  return (
-                    <DetailField
-                      key={key}
-                      icon={getFieldIcon(key)}
-                      label={formatKeyLabel(key)}
-                      value={content}
-                      mono={mono}
-                      className={isLong ? 'sm:col-span-2' : ''}
-                    />
+                  const { content, mono, isLong } = formatFieldValue(
+                    key,
+                    val,
+                    (txt) => handleCopyField(txt, key),
+                    copiedKey === key,
                   );
+                  console.log('Value', content)
+                  if(key != 'id') {
+                    return (
+                      <DetailField
+                        key={key}
+                        icon={getFieldIcon(key)}
+                        label={formatKeyLabel(key)}
+                        value={content}
+                        mono={mono}
+                        className={isLong ? 'sm:col-span-2' : ''}
+                      />
+                    );
+                  }
+                  
                 })}
               </div>
             ) : (
@@ -352,41 +411,6 @@ export function RecordInspectorDrawer({
                 />
               </div>
             )}
-          </div>
-
-          {/* Raw JSON Response Card */}
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xs dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/80 px-6 py-3.5 dark:border-gray-800 dark:bg-white/[0.02]">
-              <div className="flex items-center gap-2">
-                <Code2 className="h-4 w-4 text-gray-400" />
-                <h4 className="text-xs font-semibold text-gray-700 dark:text-white/80">
-                  Raw JSON Response
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={handleCopyRaw}
-                className="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-500 hover:bg-gray-200/60 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-colors"
-                title="Copy raw JSON"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span>Copy</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="p-4">
-              <pre className="max-h-56 overflow-x-auto rounded-xl border border-gray-100 bg-gray-50 p-3.5 font-mono text-xs leading-relaxed text-gray-700 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
-                {JSON.stringify(record, null, 2)}
-              </pre>
-            </div>
           </div>
         </div>
       ) : (

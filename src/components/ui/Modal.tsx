@@ -1,4 +1,5 @@
 import { useEffect, useId, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/libs/cn';
 
@@ -38,14 +39,23 @@ export function Modal({
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    // Lock body scrolling while modal is active
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+  if (typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-[2px]"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -55,13 +65,13 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          'w-full rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-800 dark:bg-gray-900',
+          'w-full rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 transition-all duration-200',
           sizeClasses[size],
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+        <div className="flex items-start justify-between gap-4 border-b border-gray-100 bg-gray-50/50 px-6 py-4.5 dark:border-gray-800 dark:bg-white/[0.02]">
           <div>
-            <h2 id={titleId} className="font-display text-base font-semibold text-gray-900 dark:text-white/90">
+            <h2 id={titleId} className="font-display text-base font-semibold text-gray-900 dark:text-white/95">
               {title}
             </h2>
             {description && (
@@ -72,18 +82,19 @@ export function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer"
+            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="max-h-[75vh] overflow-y-auto px-6 py-5">{children}</div>
+        <div className="max-h-[calc(85vh-8rem)] overflow-y-auto px-6 py-5">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-gray-200 px-6 py-3.5 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-2.5 border-t border-gray-100 bg-gray-50/50 px-6 py-3.5 dark:border-gray-800 dark:bg-white/[0.02]">
             {footer}
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

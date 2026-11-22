@@ -459,7 +459,6 @@ export function UsersPage() {
         isOpen={Boolean(inspectId)}
         onClose={() => setInspectId(null)}
         title="User Record Detail"
-        endpoint={inspectId ? `GET /api/v1/user/find/${inspectId}` : ""}
         isLoading={findQuery.isLoading}
         error={findQuery.error}
         record={findQuery.data}

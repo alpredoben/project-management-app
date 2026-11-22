@@ -404,7 +404,6 @@ export function RolesPage() {
         isOpen={Boolean(inspectId)}
         onClose={() => setInspectId(null)}
         title="Role Record Detail"
-        endpoint={inspectId ? `GET /api/v1/role/find/${inspectId}` : ''}
         isLoading={findQuery.isLoading}
         error={findQuery.error}
         record={findQuery.data}

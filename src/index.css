@@ -20,7 +20,7 @@
   :root {
     --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   }
 
   body {
@@ -57,7 +57,7 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 

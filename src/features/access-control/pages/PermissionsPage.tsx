@@ -396,7 +396,6 @@ export function PermissionsPage() {
         isOpen={Boolean(inspectId)}
         onClose={() => setInspectId(null)}
         title="Permission Detail"
-        endpoint={inspectId ? `GET /api/v1/permission/find/${inspectId}` : ''}
         isLoading={findQuery.isLoading}
         error={findQuery.error}
         record={findQuery.data}
