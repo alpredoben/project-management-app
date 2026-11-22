@@ -21,13 +21,14 @@ import { Modal } from '@/components/ui/Modal';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
-import type { T_SortOrder } from '@/types/api-type';
-import { formatDate } from '@/shared/libs/helper';
-import { projectTypeApi, type In_ProjectType } from '../api';
+import type { In_ProjectType, T_SortOrder } from '@/types/api-type';
+import { formatDate, slashed } from '@/shared/libs/helper';
+import { projectTypeApi } from '../api';
 import {
   SchemaValidateProjectType,
   type FormPayloadProjectType,
 } from '../schemas';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 export function ProjectTypePage() {
   const dispatch = useAppDispatch();
@@ -55,7 +56,7 @@ export function ProjectTypePage() {
   }, [searchInput]);
 
   // ─── Query & Mutation ────────────────────────────────────────────────────
-  const listQuery = projectTypeApi.query.useProjectTypeList({
+  const listQuery = projectTypeApi.query.useFetchPaginationList({
     page,
     limit,
     search: debouncedSearch || undefined,
@@ -63,9 +64,9 @@ export function ProjectTypePage() {
     order_by: orderBy,
   });
 
-  const createMutation = projectTypeApi.mutation.useCreateProjectType();
-  const updateMutation = projectTypeApi.mutation.useUpdateProjectType();
-  const deleteMutation = projectTypeApi.mutation.useDeleteProjectType();
+  const createMutation = projectTypeApi.mutation.useCreate();
+  const updateMutation = projectTypeApi.mutation.useUpdate();
+  const deleteMutation = projectTypeApi.mutation.useDelete();
 
   const {
     register,
@@ -203,7 +204,7 @@ export function ProjectTypePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/admin/project-type/${row.id}`)}
+            onClick={() => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_TYPE_DETAIL(row.id)))}
             title="View detail"
           >
             <Eye className="h-3.5 w-3.5" />
@@ -313,9 +314,6 @@ export function ProjectTypePage() {
                   <option value={50}>50</option>
                 </select>
 
-                <span className="font-mono tabular-nums">
-                  {listQuery.data?.totalRows ?? items.length} total
-                </span>
               </div>
             </div>
           }

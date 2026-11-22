@@ -193,3 +193,11 @@ export interface In_TaskStatus  {
   created_at: string;
   updated_at: string;
 }
+
+export interface In_TaskType {
+  id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}

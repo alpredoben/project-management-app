@@ -1,25 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { httpRequest } from "@/shared/libs/http";
-import type { In_PaginatedResult, In_QueryParam } from "@/types/api-type";
+import type { In_PaginatedResult, In_ProjectType, In_QueryParam } from "@/types/api-type";
 import { API_ENDPOINTS, getApiUrl } from "@/config/api-config";
 import {
   SchemaValidateProjectType,
   type FormPayloadProjectType,
 } from "../schemas";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 
-export type In_ProjectType = {
-  id: string;
-  name: string;
-  description: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-// ─── Query Keys ──────────────────────────────────────────────────────────────
-
+// Query Key
 export const projectTypeKeys = {
   all: ["project-types"] as const,
   list: (params?: In_QueryParam) =>
@@ -27,8 +17,7 @@ export const projectTypeKeys = {
   detail: (id: string) => ["project-types", "detail", id] as const,
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
+// Helper
 const buildQueryString = (params?: In_QueryParam): string => {
   if (!params) return "";
   const query = new URLSearchParams();
@@ -46,7 +35,7 @@ const buildQueryString = (params?: In_QueryParam): string => {
   return query.size ? `?${query.toString()}` : "";
 };
 
-const toProjectTypeMutationPayload = (
+const payloadOfMutation = (
   values: FormPayloadProjectType["ProjectType"],
 ) => ({
   name: values.name.trim(),
@@ -57,7 +46,7 @@ const toProjectTypeMutationPayload = (
 
 export const projectTypeApi = {
   query: {
-    useProjectTypeList: (params?: In_QueryParam) => {
+    useFetchPaginationList: (params?: In_QueryParam) => {
       return useQuery({
         queryKey: projectTypeKeys.list(params),
         queryFn: async ({
@@ -81,7 +70,7 @@ export const projectTypeApi = {
       });
     },
 
-    useProjectTypeFind: (id: string | null) => {
+    useFindById: (id: string | null) => {
       return useQuery({
         queryKey: projectTypeKeys.detail(id ?? ""),
         queryFn: async ({ signal }): Promise<In_ProjectType> => {
@@ -97,7 +86,7 @@ export const projectTypeApi = {
   },
 
   mutation: {
-    useCreateProjectType: () => {
+    useCreate: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (
@@ -107,7 +96,7 @@ export const projectTypeApi = {
             getApiUrl(API_ENDPOINTS.PROJECT_TYPE.CREATE),
             {
               method: "POST",
-              body: toProjectTypeMutationPayload(values),
+              body: payloadOfMutation(values),
             },
           );
           return SchemaValidateProjectType.projectTypeDetail.parse(res.data);
@@ -118,7 +107,7 @@ export const projectTypeApi = {
       });
     },
 
-    useUpdateProjectType: () => {
+    useUpdate: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async ({
@@ -132,7 +121,7 @@ export const projectTypeApi = {
             getApiUrl(API_ENDPOINTS.PROJECT_TYPE.UPDATE(id)),
             {
               method: "PUT",
-              body: toProjectTypeMutationPayload(values),
+              body: payloadOfMutation(values),
             },
           );
           return SchemaValidateProjectType.projectTypeDetail.parse(res.data);
@@ -146,7 +135,7 @@ export const projectTypeApi = {
       });
     },
 
-    useDeleteProjectType: () => {
+    useDelete: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (id: string): Promise<string | undefined> => {

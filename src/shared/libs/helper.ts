@@ -41,3 +41,5 @@ export function lazyPage<M extends Record<string, unknown>>(
 
 export const getFlatten = (nodes: readonly In_AdminRouteNode[]): In_AdminRouteNode[] =>
   nodes.flatMap((node) => [node, ...getFlatten(node.items)]);
+
+export const slashed = (key: string): string => `/${key}` 

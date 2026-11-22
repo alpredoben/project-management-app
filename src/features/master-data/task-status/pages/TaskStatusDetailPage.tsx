@@ -12,8 +12,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { taskStatusApi } from '../api';
-import { formatDate } from '@/shared/libs/helper';
-import { ADMIN_ROUTE } from '@/app/routes/MetaRoute';
+import { formatDate, slashed } from '@/shared/libs/helper';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // Detail Field Component 
 
@@ -67,7 +67,7 @@ export function TaskStatusDetailPage() {
 
   const findQuery = taskStatusApi.query.useFindById(id ?? null);
 
-  const goBack = () => navigate(ADMIN_ROUTE.TASK_STATUS.MAIN);
+  const goBack = () => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.TASK_STATUS));
 
   //  Missing ID guard
   if (!id) {

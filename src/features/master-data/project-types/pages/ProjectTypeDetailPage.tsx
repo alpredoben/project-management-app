@@ -10,7 +10,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { projectTypeApi } from '../api';
-import { formatDate } from '@/shared/libs/helper';
+import { formatDate, slashed } from '@/shared/libs/helper';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // ─── Detail Field ────────────────────────────────────────────────────────────
 
@@ -64,9 +65,9 @@ export function ProjectTypeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const findQuery = projectTypeApi.query.useProjectTypeFind(id ?? null);
+  const findQuery = projectTypeApi.query.useFindById(id ?? null);
 
-  const goBack = () => navigate('/admin/project-type');
+  const goBack = () => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_TYPE));
 
   // ── Missing ID guard ──────────────────────────────────────────────────────
   if (!id) {

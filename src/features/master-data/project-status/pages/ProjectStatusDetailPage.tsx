@@ -12,7 +12,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { projectStatusApi } from '../api';
-import { formatDate } from '@/shared/libs/helper';
+import { formatDate, slashed } from '@/shared/libs/helper';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // ─── Detail Field Component ──────────────────────────────────────────────────
 
@@ -66,9 +67,9 @@ export function ProjectStatusDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const findQuery = projectStatusApi.query.useProjectStatusFind(id ?? null);
+  const findQuery = projectStatusApi.query.useFindById(id ?? null);
 
-  const goBack = () => navigate('/admin/project-status');
+  const goBack = () => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_STATUS));
 
   // ── Missing ID guard ──────────────────────────────────────────────────────
   if (!id) {

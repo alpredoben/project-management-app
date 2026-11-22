@@ -30,7 +30,7 @@ const buildQueryString = (params?: In_QueryParam): string => {
   return query.size ? `?${query.toString()}` : "";
 }
 
-const toProjectStatusMutationPayload = (
+const payloadOfMutation = (
   values: FormPayloadTaskStatus["TaskStatus"],
 ): In_TaskStatusMutationPayload => ({
   name: values.name.trim(),
@@ -48,7 +48,7 @@ export const taskStatusApi = {
           signal,
         }): Promise<In_PaginatedResult<In_TaskStatus>> => {
           const qs = buildQueryString(params);
-          const endpoint = `${getApiUrl(API_ENDPOINTS.PROJECT_STATUS.LIST)}${qs}`;
+          const endpoint = `${getApiUrl(API_ENDPOINTS.TASK_STATUS.LIST)}${qs}`;
           const res = await httpRequest<unknown>(endpoint, { signal });
           const items = z
             .array(SchemaValidateTaskStatus.taskStatusDetail)
@@ -91,7 +91,7 @@ export const taskStatusApi = {
             getApiUrl(API_ENDPOINTS.TASK_STATUS.CREATE),
             {
               method: "POST",
-              body: toProjectStatusMutationPayload(values),
+              body: payloadOfMutation(values),
             },
           );
           return SchemaValidateTaskStatus.taskStatusDetail.parse(res.data);
@@ -116,7 +116,7 @@ export const taskStatusApi = {
             getApiUrl(API_ENDPOINTS.TASK_STATUS.UPDATE(id)),
             {
               method: "PUT",
-              body: toProjectStatusMutationPayload(values),
+              body: payloadOfMutation(values),
             },
           );
           return SchemaValidateTaskStatus.taskStatusDetail.parse(res.data);

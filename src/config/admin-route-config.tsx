@@ -1,10 +1,11 @@
 import { matchPath } from "react-router-dom";
-import { lazyPage } from "@/shared/libs/helper";
+import { lazyPage, slashed } from "@/shared/libs/helper";
 import type {
   In_AdminRouteNode,
   In_BreadcrumbItem,
   In_RouteConfig,
 } from "@/types/menu-type";
+import { ROUTE_PATH_LIST } from "@/shared/constants";
 
 /**
  * SINGLE SOURCE OF TRUTH untuk menu sidebar, route, judul tab & breadcrumb admin.
@@ -15,198 +16,282 @@ import type {
  */
 export const ADMIN_ROUTE_LIST: readonly In_AdminRouteNode[] = [
   {
-    id: 'overview',
-    label: 'Workspace Console',
+    id: "overview",
+    label: "Workspace Console",
     path: null,
     description: null,
     icon: null,
     component: null,
     items: [
       {
-        id: 'dashboard-overview',
-        label: 'Overview',
-        path: '/admin',
-        title: 'Executive Overview',
-        description: 'Live portfolio metrics across workspaces, active projects, milestones, and tasks.',
-        icon: 'overview',
-        apiPrefix: '/api/v1',
-        component: lazyPage(() => import("@/features/dashboard/pages/DashboardOverview"), "DashboardOverviewPage"),
+        id: "dashboard-overview",
+        label: "Overview",
+        path: slashed(ROUTE_PATH_LIST.OVERVIEW.DASHBOARD),
+        title: "Executive Overview",
+        description:
+          "Live portfolio metrics across workspaces, active projects, milestones, and tasks.",
+        icon: "overview",
+        apiPrefix: "/api/v1",
+        component: lazyPage(
+          () => import("@/features/dashboard/pages/DashboardOverview"),
+          "DashboardOverviewPage",
+        ),
         items: [],
       },
       {
-        id: 'auth-session',
-        label: 'Auth & Session',
-        path: '/admin/auth',
-        title: 'Authentication & Session',
-        description: 'Inspect current user profile, rotate refresh tokens, or terminate session.',
-        icon: 'auth',
-        apiPrefix: '/api/v1/auth',
-        component: lazyPage(() => import("@/features/auth/pages/AuthSessionPage"), "AuthSessionPage"),
-        items: [],
-      },
-    ],
-  },
-  {
-    id: 'workspace-group',
-    label: 'Workspace',
-    path: null,
-    description: null,
-    icon: null,
-    component: null,
-    items: [
-      {
-        id: 'workspace',
-        label: 'Workspace',
-        path: '/admin/workspace',
-        title: 'Workspaces',
-        description: 'Organize engineering workspaces, team collaborations, and brand logos.',
-        icon: 'workspaces',
-        apiPrefix: '/api/v1/workspace',
-        component: lazyPage(() => import("@/features/workspace/pages/WorkspacePage"), "WorkspacePage"),
-        items: [
-          {
-            id: 'workspace-detail',
-            label: 'Workspace Detail',
-            path: '/admin/workspace/:id',
-            title: 'Workspace Detail',
-            description: 'Detail of workspace.',
-            icon: 'workspaces',
-            apiPrefix: '/api/v1/workspace',
-            component: lazyPage(() => import("@/features/workspace/pages/WorkspaceDetailPage"), "WorkspaceDetailPage"),
-            items: [],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'access-control',
-    label: 'Access Control',
-    path: null,
-    description: null,
-    icon: null,
-    component: null,
-    items: [
-      {
-        id: 'users',
-        label: 'Users',
-        path: '/admin/users',
-        title: 'User Directory',
-        description: 'Manage engineering user accounts and assign RBAC roles.',
-        icon: 'users',
-        apiPrefix: '/api/v1/user',
-        component: lazyPage(() => import("@/features/access-control/pages/UsersPage"), "UsersPage"),
-        items: [],
-      },
-      {
-        id: 'roles',
-        label: 'Roles',
-        path: '/admin/roles',
-        title: 'Roles',
-        description: 'Define organizational roles and attach granular permissions.',
-        icon: 'roles',
-        apiPrefix: '/api/v1/role',
-        component: lazyPage(() => import("@/features/access-control/pages/RolesPage"), "RolesPage"),
-        items: [
-          {
-            id: 'role-permissions',
-            label: 'Role Permissions',
-            path: '/admin/roles/:id/permissions',
-            title: 'Role Permissions',
-            description: 'Attach permissions to a role.',
-            icon: 'roles',
-            apiPrefix: '/api/v1/role',
-            component: lazyPage(() => import("@/features/access-control/pages/RolePermissionsPage"), "RolePermissionsPage"),
-            items: [],
-          },
-        ],
-      },
-      {
-        id: 'permissions',
-        label: 'Permissions',
-        path: '/admin/permissions',
-        title: 'Permissions',
-        description: 'Configure capability keys and module-level access policies.',
-        icon: 'permissions',
-        apiPrefix: '/api/v1/permission',
-        component: lazyPage(() => import("@/features/access-control/pages/PermissionsPage"), "PermissionsPage"),
+        id: "auth-session",
+        label: "Auth & Session",
+        path: slashed(ROUTE_PATH_LIST.OVERVIEW.AUTH_SESSION),
+        title: "Authentication & Session",
+        description:
+          "Inspect current user profile, rotate refresh tokens, or terminate session.",
+        icon: "auth",
+        apiPrefix: "/api/v1/auth",
+        component: lazyPage(
+          () => import("@/features/auth/pages/AuthSessionPage"),
+          "AuthSessionPage",
+        ),
         items: [],
       },
     ],
   },
   {
-    id: 'master-data',
-    label: 'Master Data',
+    id: "workspace-group",
+    label: "Workspace",
     path: null,
     description: null,
     icon: null,
     component: null,
     items: [
       {
-        id: 'project-type',
-        label: 'Project Type',
-        path: '/admin/project-type',
-        title: 'Project Type',
-        description: 'Manage master data project type.',
-        icon: 'project-types',
-        apiPrefix: '/api/v1/project-types',
-        component: lazyPage(() => import("@/features/master-data/project-types/pages/ProjectTypePage"), "ProjectTypePage"),
+        id: "workspace",
+        label: "Workspace",
+        path: slashed(ROUTE_PATH_LIST.WORKSPACE.WORKSPACE),
+        title: "Workspaces",
+        description:
+          "Organize engineering workspaces, team collaborations, and brand logos.",
+        icon: "workspaces",
+        apiPrefix: "/api/v1/workspace",
+        component: lazyPage(
+          () => import("@/features/workspace/pages/WorkspacePage"),
+          "WorkspacePage",
+        ),
         items: [
           {
-            id: 'project-type-detail',
-            label: 'Project Type Detail',
-            path: '/admin/project-type/:id',
-            title: 'Project Type Detail',
-            description: 'Detail of project type.',
-            icon: 'project-types',
-            apiPrefix: '/api/v1/project-types',
-            component: lazyPage(() => import("@/features/master-data/project-types/pages/ProjectTypeDetailPage"), "ProjectTypeDetailPage"),
+            id: "workspace-detail",
+            label: "Workspace Detail",
+            path: slashed(ROUTE_PATH_LIST.WORKSPACE.WORKSPACE_DETAIL()),
+            title: "Workspace Detail",
+            description: "Detail of workspace.",
+            icon: "workspaces",
+            apiPrefix: "/api/v1/workspace",
+            component: lazyPage(
+              () => import("@/features/workspace/pages/WorkspaceDetailPage"),
+              "WorkspaceDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "access-control",
+    label: "Access Control",
+    path: null,
+    description: null,
+    icon: null,
+    component: null,
+    items: [
+      {
+        id: "users",
+        label: "Users",
+        path: slashed(ROUTE_PATH_LIST.ACCESS_CONTROL.USER),
+        title: "User Directory",
+        description: "Manage engineering user accounts and assign RBAC roles.",
+        icon: "users",
+        apiPrefix: "/api/v1/user",
+        component: lazyPage(
+          () => import("@/features/access-control/pages/UsersPage"),
+          "UsersPage",
+        ),
+        items: [],
+      },
+      {
+        id: "roles",
+        label: "Roles",
+        path: slashed(ROUTE_PATH_LIST.ACCESS_CONTROL.ROLE),
+        title: "Roles",
+        description:
+          "Define organizational roles and attach granular permissions.",
+        icon: "roles",
+        apiPrefix: "/api/v1/role",
+        component: lazyPage(
+          () => import("@/features/access-control/pages/RolesPage"),
+          "RolesPage",
+        ),
+        items: [
+          {
+            id: "role-permissions",
+            label: "Role Permissions",
+            path: slashed(ROUTE_PATH_LIST.ACCESS_CONTROL.ROLE_PERMISSION()),
+            title: "Role Permissions",
+            description: "Attach permissions to a role.",
+            icon: "roles",
+            apiPrefix: "/api/v1/role",
+            component: lazyPage(
+              () =>
+                import("@/features/access-control/pages/RolePermissionsPage"),
+              "RolePermissionsPage",
+            ),
             items: [],
           },
         ],
       },
       {
-        id: 'project-status',
-        label: 'Project Status',
-        path: '/admin/project-status',
-        title: 'Project Status',
-        description: 'Manage master data project status lifecycle.',
-        icon: 'project-statuses',
-        apiPrefix: '/api/v1/project-status',
-        component: lazyPage(() => import("@/features/master-data/project-status/pages/ProjectStatusPage"), "ProjectStatusPage"),
+        id: "permissions",
+        label: "Permissions",
+        path: slashed(ROUTE_PATH_LIST.ACCESS_CONTROL.PERMISSION),
+        title: "Permissions",
+        description:
+          "Configure capability keys and module-level access policies.",
+        icon: "permissions",
+        apiPrefix: "/api/v1/permission",
+        component: lazyPage(
+          () => import("@/features/access-control/pages/PermissionsPage"),
+          "PermissionsPage",
+        ),
+        items: [],
+      },
+    ],
+  },
+  {
+    id: "master-data",
+    label: "Master Data",
+    path: null,
+    description: null,
+    icon: null,
+    component: null,
+    items: [
+      {
+        id: "project-type",
+        label: "Project Type",
+        path: slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_TYPE),
+        title: "Project Type",
+        description: "Manage master data project type.",
+        icon: "project-types",
+        apiPrefix: "/api/v1/project-types",
+        component: lazyPage(
+          () =>
+            import("@/features/master-data/project-types/pages/ProjectTypePage"),
+          "ProjectTypePage",
+        ),
         items: [
           {
-            id: 'project-status-detail',
-            label: 'Project Status Detail',
-            path: '/admin/project-status/:id',
-            title: 'Project Status Detail',
-            description: 'Detail of project status.',
-            icon: 'project-statuses',
-            apiPrefix: '/api/v1/project-status',
-            component: lazyPage(() => import("@/features/master-data/project-status/pages/ProjectStatusDetailPage"), "ProjectStatusDetailPage"),
+            id: "project-type-detail",
+            label: "Project Type Detail",
+            path: slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_TYPE_DETAIL()),
+            title: "Project Type Detail",
+            description: "Detail of project type.",
+            icon: "project-types",
+            apiPrefix: "/api/v1/project-types",
+            component: lazyPage(
+              () =>
+                import("@/features/master-data/project-types/pages/ProjectTypeDetailPage"),
+              "ProjectTypeDetailPage",
+            ),
             items: [],
           },
         ],
       },
       {
-        id: 'task-status',
-        label: 'Task Status',
-        path: '/admin/task-status',
-        title: 'Task Status',
-        description: 'Manage master data task status lifecycle.',
-        icon: 'task-statuses',
-        apiPrefix: '/api/v1/task-status',
-        component: lazyPage(() => import("@/features/master-data/task-status/pages/TaskStatusPage"), "TaskStatusPage"),
+        id: "project-status",
+        label: "Project Status",
+        path: slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_STATUS),
+        title: "Project Status",
+        description: "Manage master data project status lifecycle.",
+        icon: "project-statuses",
+        apiPrefix: "/api/v1/project-status",
+        component: lazyPage(
+          () =>
+            import("@/features/master-data/project-status/pages/ProjectStatusPage"),
+          "ProjectStatusPage",
+        ),
         items: [
           {
-            id: 'task-status-detail',
-            label: 'Task Status Detail',
-            path: '/admin/task-status/:id',
-            title: 'Task Status Detail',
-            description: 'Detail of task status.',
-            icon: 'task-statuses',
-            apiPrefix: '/api/v1/task-status',
-            component: lazyPage(() => import("@/features/master-data/task-status/pages/TaskStatusDetailPage"), "TaskStatusDetailPage"),
+            id: "project-status-detail",
+            label: "Project Status Detail",
+            path: slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_STATUS_DETAIL()),
+            title: "Project Status Detail",
+            description: "Detail of project status.",
+            icon: "project-statuses",
+            apiPrefix: "/api/v1/project-status",
+            component: lazyPage(
+              () =>
+                import("@/features/master-data/project-status/pages/ProjectStatusDetailPage"),
+              "ProjectStatusDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+      {
+        id: "task-status",
+        label: "Task Status",
+        path: slashed(ROUTE_PATH_LIST.MASTER_DATA.TASK_STATUS),
+        title: "Task Status",
+        description: "Manage master data task status lifecycle.",
+        icon: "task-statuses",
+        apiPrefix: "/api/v1/task-status",
+        component: lazyPage(
+          () =>
+            import("@/features/master-data/task-status/pages/TaskStatusPage"),
+          "TaskStatusPage",
+        ),
+        items: [
+          {
+            id: "task-status-detail",
+            label: "Task Status Detail",
+            path: slashed(ROUTE_PATH_LIST.MASTER_DATA.TAKS_STATUS_DETAIL()),
+            title: "Task Status Detail",
+            description: "Detail of task status.",
+            icon: "task-statuses",
+            apiPrefix: "/api/v1/task-status",
+            component: lazyPage(
+              () =>
+                import("@/features/master-data/task-status/pages/TaskStatusDetailPage"),
+              "TaskStatusDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+      {
+        id: "task-type",
+        label: "Task Type",
+        path: slashed(ROUTE_PATH_LIST.MASTER_DATA.TASK_TYPE),
+        title: "Task Type",
+        description: "Manage master data task type lifecycle.",
+        icon: "task-types",
+        apiPrefix: "/api/v1/task-type",
+        component: lazyPage(
+          () => import("@/features/master-data/task-types/pages/TaskTypePage"),
+          "TaskTypePage",
+        ),
+        items: [
+          {
+            id: "task-type-detail",
+            label: "Task Type Detail",
+            path: slashed(ROUTE_PATH_LIST.MASTER_DATA.TASK_TYPE_DETAIL()),
+            title: "Task Type Detail",
+            description: "Detail of task type.",
+            icon: "task-types",
+            apiPrefix: "/api/v1/task-type",
+            component: lazyPage(
+              () =>
+                import("@/features/master-data/task-types/pages/TaskTypeDetailPage"),
+              "TaskTypeDetailPage",
+            ),
             items: [],
           },
         ],
@@ -228,8 +313,14 @@ const buildRoutes = (
   parents: In_BreadcrumbItem[] = [],
 ): In_AdminRoute[] =>
   nodes.flatMap(({ path, component, title, label, items }) => {
-    const trail = [...parents, { label, path: path?.includes(":") ? undefined : path ?? undefined }];
-    const self = path && component ? [{ path, component, title: title ?? label, trail }] : [];
+    const trail = [
+      ...parents,
+      { label, path: path?.includes(":") ? undefined : (path ?? undefined) },
+    ];
+    const self =
+      path && component
+        ? [{ path, component, title: title ?? label, trail }]
+        : [];
     return [...self, ...buildRoutes(items, trail)];
   });
 

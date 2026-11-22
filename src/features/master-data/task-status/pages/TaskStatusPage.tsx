@@ -22,13 +22,13 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
 import type { In_TaskStatus, T_SortOrder } from '@/types/api-type';
-import { formatDate } from '@/shared/libs/helper';
+import { formatDate, slashed } from '@/shared/libs/helper';
 import { taskStatusApi } from '../api';
 import {
     SchemaValidateTaskStatus,
   type FormPayloadTaskStatus,
 } from '../schemas';
-import { ADMIN_ROUTE } from '@/app/routes/MetaRoute';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // Quick color presets for user convenience
 const PRESET_COLORS = [
@@ -189,15 +189,6 @@ export function TaskStatusPage() {
 
   const columns: DataTableColumn<In_TaskStatus>[] = [
     {
-      key: 'sequence_order',
-      header: 'No. Order',
-      render: (row) => (
-        <span className="inline-flex items-center justify-center h-6 min-w-7 px-1.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono font-bold dark:bg-gray-800 dark:text-gray-300">
-          #{row.sequence_order}
-        </span>
-      ),
-    },
-    {
       key: 'name',
       header: 'Status Name',
       render: (row) => {
@@ -236,6 +227,15 @@ export function TaskStatusPage() {
       },
     },
     {
+      key: 'sequence_order',
+      header: 'No. Order',
+      render: (row) => (
+        <span className="inline-flex items-center justify-center h-6 min-w-7 px-1.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono font-bold dark:bg-gray-800 dark:text-gray-300">
+          #{row.sequence_order}
+        </span>
+      ),
+    },
+    {
       key: 'description',
       header: 'Description',
       render: (row) => (
@@ -263,7 +263,7 @@ export function TaskStatusPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(ADMIN_ROUTE.TASK_STATUS.DETAIL(row.id))}
+            onClick={() => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.TAKS_STATUS_DETAIL(row.id)))}
             title="View detail"
           >
             <Eye className="h-3.5 w-3.5" />

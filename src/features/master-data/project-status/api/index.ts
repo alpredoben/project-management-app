@@ -11,8 +11,7 @@ import {
 
 
 
-// ─── Query Keys ──────────────────────────────────────────────────────────────
-
+// Query Key
 export const projectStatusKeys = {
   all: ["project-status"] as const,
   list: (params?: In_QueryParam) =>
@@ -20,8 +19,7 @@ export const projectStatusKeys = {
   detail: (id: string) => ["project-status", "detail", id] as const,
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
+// Helper
 const buildQueryString = (params?: In_QueryParam): string => {
   if (!params) return "";
   const query = new URLSearchParams();
@@ -39,7 +37,7 @@ const buildQueryString = (params?: In_QueryParam): string => {
   return query.size ? `?${query.toString()}` : "";
 };
 
-const toProjectStatusMutationPayload = (
+const payloadOfMutation = (
   values: FormPayloadProjectStatus["ProjectStatus"],
 ): In_ProjectStatusMutationPayload => ({
   name: values.name.trim(),
@@ -52,7 +50,7 @@ const toProjectStatusMutationPayload = (
 
 export const projectStatusApi = {
   query: {
-    useProjectStatusList: (params?: In_QueryParam) => {
+    useFetchPaginationList: (params?: In_QueryParam) => {
       return useQuery({
         queryKey: projectStatusKeys.list(params),
         queryFn: async ({
@@ -76,7 +74,7 @@ export const projectStatusApi = {
       });
     },
 
-    useProjectStatusFind: (id: string | null) => {
+    useFindById: (id: string | null) => {
       return useQuery({
         queryKey: projectStatusKeys.detail(id ?? ""),
         queryFn: async ({ signal }): Promise<In_ProjectStatus> => {
@@ -92,7 +90,7 @@ export const projectStatusApi = {
   },
 
   mutation: {
-    useCreateProjectStatus: () => {
+    useCreate: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (
@@ -102,7 +100,7 @@ export const projectStatusApi = {
             getApiUrl(API_ENDPOINTS.PROJECT_STATUS.CREATE),
             {
               method: "POST",
-              body: toProjectStatusMutationPayload(values),
+              body: payloadOfMutation(values),
             },
           );
           return SchemaValidateProjectStatus.projectStatusDetail.parse(res.data);
@@ -113,7 +111,7 @@ export const projectStatusApi = {
       });
     },
 
-    useUpdateProjectStatus: () => {
+    useUpdate: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async ({
@@ -127,7 +125,7 @@ export const projectStatusApi = {
             getApiUrl(API_ENDPOINTS.PROJECT_STATUS.UPDATE(id)),
             {
               method: "PUT",
-              body: toProjectStatusMutationPayload(values),
+              body: payloadOfMutation(values),
             },
           );
           return SchemaValidateProjectStatus.projectStatusDetail.parse(res.data);
@@ -141,7 +139,7 @@ export const projectStatusApi = {
       });
     },
 
-    useDeleteProjectStatus: () => {
+    useDelete: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (id: string): Promise<string | undefined> => {

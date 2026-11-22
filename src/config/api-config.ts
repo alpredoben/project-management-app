@@ -67,6 +67,13 @@ export const API_ENDPOINTS  = {
         UPDATE: (id: string | null) => pathById('task-status/update', id),
         DELETE: (id: string | null) => pathById('task-status/delete', id),
     },
+    TASK_TYPE: {
+        LIST: 'task-type/list',
+        FIND: (id: string | null) => pathById('task-type/find', id),
+        CREATE: 'task-type/create',
+        UPDATE: (id: string | null) => pathById('task-type/update', id),
+        DELETE: (id: string | null) => pathById('task-type/delete', id),
+    },
 } as const;
 
 export const getApiUrl = (endpoint: string): string => {

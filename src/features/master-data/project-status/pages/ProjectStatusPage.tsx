@@ -21,12 +21,13 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
 import type { In_ProjectStatus, T_SortOrder } from '@/types/api-type';
-import { formatDate } from '@/shared/libs/helper';
+import { formatDate, slashed } from '@/shared/libs/helper';
 import { projectStatusApi } from '../api';
 import {
   SchemaValidateProjectStatus,
   type FormPayloadProjectStatus,
 } from '../schemas';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // Quick color presets for user convenience
 const PRESET_COLORS = [
@@ -66,7 +67,7 @@ export function ProjectStatusPage() {
   }, [searchInput]);
 
   // ─── Query & Mutation ────────────────────────────────────────────────────
-  const listQuery = projectStatusApi.query.useProjectStatusList({
+  const listQuery = projectStatusApi.query.useFetchPaginationList({
     page,
     limit,
     search: debouncedSearch || undefined,
@@ -74,9 +75,9 @@ export function ProjectStatusPage() {
     order_by: orderBy,
   });
 
-  const createMutation = projectStatusApi.mutation.useCreateProjectStatus();
-  const updateMutation = projectStatusApi.mutation.useUpdateProjectStatus();
-  const deleteMutation = projectStatusApi.mutation.useDeleteProjectStatus();
+  const createMutation = projectStatusApi.mutation.useCreate();
+  const updateMutation = projectStatusApi.mutation.useUpdate();
+  const deleteMutation = projectStatusApi.mutation.useDelete();
 
   const {
     register,
@@ -188,15 +189,7 @@ export function ProjectStatusPage() {
   const pagination = listQuery.data?.pagination ?? null;
 
   const columns: DataTableColumn<In_ProjectStatus>[] = [
-    {
-      key: 'sequence_order',
-      header: 'No. Order',
-      render: (row) => (
-        <span className="inline-flex items-center justify-center h-6 min-w-[28px] px-1.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono font-bold dark:bg-gray-800 dark:text-gray-300">
-          #{row.sequence_order}
-        </span>
-      ),
-    },
+    
     {
       key: 'name',
       header: 'Status Name',
@@ -236,6 +229,15 @@ export function ProjectStatusPage() {
       },
     },
     {
+      key: 'sequence_order',
+      header: 'No. Order',
+      render: (row) => (
+        <span className="inline-flex items-center justify-center h-6 min-w-[28px] px-1.5 rounded-md bg-gray-100 text-gray-700 text-xs font-mono font-bold dark:bg-gray-800 dark:text-gray-300">
+          #{row.sequence_order}
+        </span>
+      ),
+    },
+    {
       key: 'description',
       header: 'Description',
       render: (row) => (
@@ -263,7 +265,7 @@ export function ProjectStatusPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/admin/project-status/${row.id}`)}
+            onClick={() => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.PROJECT_STATUS_DETAIL(row.id)))}
             title="View detail"
           >
             <Eye className="h-3.5 w-3.5" />

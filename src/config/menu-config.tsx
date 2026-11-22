@@ -1,4 +1,6 @@
 import { ADMIN_ROUTE_LIST, findAdminRoute } from "@/config/admin-route-config";
+import { ROUTE_PATH_LIST } from "@/shared/constants";
+import { slashed } from "@/shared/libs/helper";
 import type {
   In_AdminMenuGroup,
   In_AdminMenuItem,
@@ -11,7 +13,7 @@ export const PUBLIC_ROUTES: readonly In_PublicRouteMenuItem[] = [
   {
     id: 'login',
     label: 'Sign In',
-    path: '/login',
+    path: slashed(ROUTE_PATH_LIST.AUTH.LOGIN),
     title: 'Sign in to MILE-DEV',
     description: 'Access your engineering workspaces, projects, and sprint tasks.',
     apiEndpoint: 'POST /api/v1/auth/login',
@@ -20,7 +22,7 @@ export const PUBLIC_ROUTES: readonly In_PublicRouteMenuItem[] = [
   {
     id: 'register',
     label: 'Register',
-    path: '/register',
+    path:  slashed(ROUTE_PATH_LIST.AUTH.REGISTER),
     title: 'Create a MILE-DEV account',
     description: 'Register your organization profile and verify your email address.',
     apiEndpoint: 'POST /api/v1/auth/register',
@@ -29,7 +31,7 @@ export const PUBLIC_ROUTES: readonly In_PublicRouteMenuItem[] = [
   {
     id: 'forgot-password',
     label: 'Forgot Password',
-    path: '/forgot-password',
+    path:  slashed(ROUTE_PATH_LIST.AUTH.FORGOT_PASSWORD),
     title: 'Recover account access',
     description: 'Request a secure password reset token for your registered email.',
     apiEndpoint: 'POST /api/v1/auth/forgot-password',
@@ -38,7 +40,7 @@ export const PUBLIC_ROUTES: readonly In_PublicRouteMenuItem[] = [
   {
     id: 'reset-password',
     label: 'Reset Password',
-    path: '/reset-password',
+    path:  slashed(ROUTE_PATH_LIST.AUTH.RESET_PASSWORD),
     title: 'Set a new password',
     description: 'Complete password recovery with your reset token.',
     apiEndpoint: 'POST /api/v1/auth/reset-password',
@@ -47,7 +49,7 @@ export const PUBLIC_ROUTES: readonly In_PublicRouteMenuItem[] = [
   {
     id: 'verified-email',
     label: 'Verify Email',
-    path: '/auth/verified-email',
+    path:  slashed(ROUTE_PATH_LIST.AUTH.VERIFY_EMAIL),
     title: 'Email Verification',
     description: 'Activate your MILE-DEV account from your email verification link.',
     apiEndpoint: 'GET /auth/verified-email',
