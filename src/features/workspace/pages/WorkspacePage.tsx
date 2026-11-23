@@ -23,9 +23,9 @@ import { Modal } from '@/components/ui/Modal';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
-import type { T_SortOrder } from '@/types/api-type';
-import { formatDate, getStorageUrl } from '@/shared/libs/helper';
-import { workspaceApi, type In_Workspace } from '../api';
+import type { In_Workspace, T_SortOrder } from '@/types/api-type';
+import { formatDate, getPublicUrlExpression, slashed } from '@/shared/libs/helper';
+import { workspaceApi } from '../api';
 import {
   ALLOWED_EXTENSIONS,
   ALLOWED_IMAGE_TYPES,
@@ -33,6 +33,7 @@ import {
   SchemaValidateWorkspace,
   type FormPayloadWorkspace,
 } from '../schemas';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // ─── Workspace Logo Preview Thumbnail ─────────────────────────────────────────
 
@@ -52,7 +53,7 @@ function WorkspaceLogo({
     lg: 'h-14 w-14 text-base rounded-2xl',
   }[size];
 
-  const fullUrl = url ? getStorageUrl(url) : null;
+  const fullUrl = url ? getPublicUrlExpression(url) : null;
 
   if (fullUrl && !imageError) {
     return (
@@ -98,18 +99,24 @@ function LogoUploader({
   error,
 }: LogoUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ file: File; url: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (selectedFile) {
-      const objectUrl = URL.createObjectURL(selectedFile);
-      setPreviewUrl(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl);
-    } else {
-      setPreviewUrl(null);
-    }
+    if (!selectedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setPreview({ file: selectedFile, url: reader.result });
+      }
+    };
+    reader.readAsDataURL(selectedFile);
+
+    return () => reader.abort();
   }, [selectedFile]);
+
+  const previewUrl = preview?.file === selectedFile ? preview.url : null;
 
   const validateAndSetFile = (file: File) => {
     const ext = file.name.split('.').pop()?.toLowerCase();
@@ -147,15 +154,19 @@ function LogoUploader({
     setIsDragging(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      validateAndSetFile(file);
+      const file: File | undefined = e.dataTransfer.files[0];
+      if (file) {
+        validateAndSetFile(file);
+      }
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      validateAndSetFile(file);
+      if (file) {
+        validateAndSetFile(file);
+      }
     }
   };
 
@@ -226,7 +237,7 @@ function LogoUploader({
           <div className="flex flex-col items-center gap-2">
             <div className="relative">
               <img
-                src={getStorageUrl(currentLogoUrl)}
+                src={getPublicUrlExpression(currentLogoUrl)}
                 alt="Current logo"
                 className="h-20 w-20 rounded-xl object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
               />
@@ -291,7 +302,7 @@ export function WorkspacePage() {
   }, [searchInput]);
 
   // ─── Query & Mutation ────────────────────────────────────────────────────
-  const listQuery = workspaceApi.query.useWorkspaceList({
+  const listQuery = workspaceApi.query.useFetchPaginationList({
     page,
     limit,
     search: debouncedSearch || undefined,
@@ -299,9 +310,9 @@ export function WorkspacePage() {
     order_by: orderBy,
   });
 
-  const createMutation = workspaceApi.mutation.useCreateWorkspace();
-  const updateMutation = workspaceApi.mutation.useUpdateWorkspace();
-  const deleteMutation = workspaceApi.mutation.useDeleteWorkspace();
+  const createMutation = workspaceApi.mutation.useCreate();
+  const updateMutation = workspaceApi.mutation.useUpdate();
+  const deleteMutation = workspaceApi.mutation.useDelete();
 
   const {
     register,
@@ -463,7 +474,7 @@ export function WorkspacePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/admin/workspace/${row.id}`)}
+            onClick={() => navigate(slashed(ROUTE_PATH_LIST.WORKSPACE.WORKSPACE_DETAIL(row.id)))}
             title="View detail"
           >
             <Eye className="h-3.5 w-3.5" />

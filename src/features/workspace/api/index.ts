@@ -1,23 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { httpRequest } from "@/shared/libs/http";
-import type { In_PaginatedResult, In_QueryParam } from "@/types/api-type";
+import type { In_PaginatedResult, In_QueryParam, In_Workspace } from "@/types/api-type";
 import { API_ENDPOINTS, getApiUrl } from "@/config/api-config";
 import {
   SchemaValidateWorkspace,
   type In_WorkspaceMutationPayload,
 } from "../schemas";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export type In_Workspace = {
-  id: string;
-  name: string;
-  slug: string;
-  logo_url: string | null;
-  created_at: string;
-  updated_at: string;
-};
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 
@@ -60,7 +49,7 @@ const toWorkspaceFormData = (payload: In_WorkspaceMutationPayload): FormData => 
 
 export const workspaceApi = {
   query: {
-    useWorkspaceList: (params?: In_QueryParam) => {
+    useFetchPaginationList: (params?: In_QueryParam) => {
       return useQuery({
         queryKey: workspaceKeys.list(params),
         queryFn: async ({
@@ -82,7 +71,7 @@ export const workspaceApi = {
       });
     },
 
-    useWorkspaceFind: (id: string | null) => {
+    useFindById: (id: string | null) => {
       return useQuery({
         queryKey: workspaceKeys.detail(id ?? ""),
         queryFn: async ({ signal }): Promise<In_Workspace> => {
@@ -98,7 +87,7 @@ export const workspaceApi = {
   },
 
   mutation: {
-    useCreateWorkspace: () => {
+    useCreate: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (
@@ -120,7 +109,7 @@ export const workspaceApi = {
       });
     },
 
-    useUpdateWorkspace: () => {
+    useUpdate: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async ({
@@ -149,7 +138,7 @@ export const workspaceApi = {
       });
     },
 
-    useDeleteWorkspace: () => {
+    useDelete: () => {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (id: string): Promise<string | undefined> => {

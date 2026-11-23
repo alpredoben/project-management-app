@@ -154,6 +154,15 @@ export interface In_User {
   updated_at: string;
 }
 
+export interface  In_Workspace {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type WorkspaceVisibility = 'private' | 'internal' | 'public';
 
 export interface In_ProjectType {
@@ -198,6 +207,48 @@ export interface In_TaskType {
   id: string;
   name: string;
   description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface In_Position {
+  id: string;
+  name: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface In_WorkspaceMemberWorkspace {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string | null;
+}
+
+export interface In_WorkspaceMemberUser {
+  id: string;
+  name: string;
+  email?: string | null;
+  nip?: string | null;
+  avatar_url?: string | null;
+}
+
+export interface In_WorkspaceMemberPosition {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface In_WorkspaceMember {
+  id: string;
+  workspace_id?: string;
+  workspace: In_WorkspaceMemberWorkspace;
+  user_id?: string;
+  user: In_WorkspaceMemberUser;
+  position_id?: string;
+  position: In_WorkspaceMemberPosition;
+  joined_at?: string;
   created_at: string;
   updated_at: string;
 }

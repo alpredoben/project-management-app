@@ -93,6 +93,35 @@ export const ADMIN_ROUTE_LIST: readonly In_AdminRouteNode[] = [
           },
         ],
       },
+      {
+        id: "workspace-members",
+        label: "Workspace Members",
+        path: slashed(ROUTE_PATH_LIST.WORKSPACE.WORKSPACE_MEMBERS),
+        title: "Workspace Members",
+        description: "Manage member assignments and position within workspaces.",
+        icon: "workspace-members",
+        apiPrefix: "/api/v1/workspace-members",
+        component: lazyPage(
+          () => import("@/features/workspace-members/pages/WorkspaceMemberPage"),
+          "WorkspaceMemberPage",
+        ),
+        items: [
+          {
+            id: "workspace-member-detail",
+            label: "Workspace Member Detail",
+            path: slashed(ROUTE_PATH_LIST.WORKSPACE.WORKSPACE_MEMBERS_DETAIL()),
+            title: "Workspace Member Detail",
+            description: "Detail of workspace member.",
+            icon: "workspace-members",
+            apiPrefix: "/api/v1/workspace-members",
+            component: lazyPage(
+              () => import("@/features/workspace-members/pages/WorkspaceMemberDetailPage"),
+              "WorkspaceMemberDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
     ],
   },
   {
@@ -291,6 +320,36 @@ export const ADMIN_ROUTE_LIST: readonly In_AdminRouteNode[] = [
               () =>
                 import("@/features/master-data/task-types/pages/TaskTypeDetailPage"),
               "TaskTypeDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+      {
+        id: "position",
+        label: "Position",
+        path: slashed(ROUTE_PATH_LIST.MASTER_DATA.POSITION),
+        title: "Position",
+        description: "Manage master data position lifecycle.",
+        icon: "positions",
+        apiPrefix: "/api/v1/position",
+        component: lazyPage(
+          () => import("@/features/master-data/position/pages/PositionPage"),
+          "PositionPage",
+        ),
+        items: [
+          {
+            id: "position-detail",
+            label: "Position Detail",
+            path: slashed(ROUTE_PATH_LIST.MASTER_DATA.POSITION_DETAIL()),
+            title: "Position Detail",
+            description: "Detail of position.",
+            icon: "positions",
+            apiPrefix: "/api/v1/position",
+            component: lazyPage(
+              () =>
+                import("@/features/master-data/position/pages/PositionDetailPage"),
+              "PositionDetailPage",
             ),
             items: [],
           },

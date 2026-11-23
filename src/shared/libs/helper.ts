@@ -18,16 +18,6 @@ export const formatDate = (strDate: string, format: string = 'D MMMM YYYY HH:mm'
     return dayjs(strDate).format(format)
 }
 
-export const getStorageUrl = (path?: string | null): string => {
-  if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
-    return path;
-  }
-  const rawBase = (import.meta.env.VITE_API_BASE_URL as string | undefined) || 'http://localhost:8017';
-  const baseUrl = rawBase.replace(/\/+$/, '');
-  const cleanPath = path.replace(/^\/+/, '');
-  return `${baseUrl}/${cleanPath}`;
-}
 
 export function lazyPage<M extends Record<string, unknown>>(
   loader: () => Promise<M>,
@@ -43,3 +33,19 @@ export const getFlatten = (nodes: readonly In_AdminRouteNode[]): In_AdminRouteNo
   nodes.flatMap((node) => [node, ...getFlatten(node.items)]);
 
 export const slashed = (key: string): string => `/${key}` 
+
+
+export const getPublicUrlExpression = (url: string): string => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const STORAGE_BUCKET = "pm-api-storage";
+  const filePath = url.trim().replace(/\\/g, "/").replace(/^\/+/, "");
+
+  if (!filePath) return "";
+  if (/^https?:\/\//i.test(filePath)) return filePath;
+
+  const apiOrigin = new URL(API_BASE_URL).origin;
+  return new URL(
+    `/storage/${STORAGE_BUCKET}/${filePath}`,
+    apiOrigin,
+  ).toString();
+}

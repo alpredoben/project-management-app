@@ -16,21 +16,21 @@ import {
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { DataTable, type DataTableColumn } from '@/components/ui/DataTable';
-import { Input, Textarea } from '@/components/ui/FormControls';
+import { Input } from '@/components/ui/FormControls';
 import { Modal } from '@/components/ui/Modal';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAppDispatch } from '@/store/hooks';
 import { pushToast } from '@/store/slices/ui-slice';
-import type { In_TaskType, T_SortOrder } from '@/types/api-type';
+import type { In_Position, T_SortOrder } from '@/types/api-type';
 import { formatDate, slashed } from '@/shared/libs/helper';
-import { taskTypeApi } from '../api';
+import { positionApi } from '../api';
 import {
-  SchemaValidateTaskType,
-  type FormPayloadTaskType,
+  SchemaValidatePosition,
+  type FormPayloadPosition,
 } from '../schemas';
 import { ROUTE_PATH_LIST } from '@/shared/constants';
 
-export function TaskTypePage() {
+export function PositionPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -44,8 +44,8 @@ export function TaskTypePage() {
 
   // ─── Action & Form State ─────────────────────────────────────────────────
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<In_TaskType | null>(null);
-  const [deletingItem, setDeletingItem] = useState<In_TaskType | null>(null);
+  const [editingItem, setEditingItem] = useState<In_Position | null>(null);
+  const [deletingItem, setDeletingItem] = useState<In_Position | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -56,7 +56,7 @@ export function TaskTypePage() {
   }, [searchInput]);
 
   // ─── Query & Mutation ────────────────────────────────────────────────────
-  const listQuery = taskTypeApi.query.useFetchPaginationList({
+  const listQuery = positionApi.query.useFetchPaginationList({
     page,
     limit,
     search: debouncedSearch || undefined,
@@ -64,37 +64,36 @@ export function TaskTypePage() {
     order_by: orderBy,
   });
 
-  const createMutation = taskTypeApi.mutation.useCreate();
-  const updateMutation = taskTypeApi.mutation.useUpdate();
-  const deleteMutation = taskTypeApi.mutation.useDelete();
+  const createMutation = positionApi.mutation.useCreate();
+  const updateMutation = positionApi.mutation.useUpdate();
+  const deleteMutation = positionApi.mutation.useDelete();
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormPayloadTaskType['TaskType']>({
-    resolver: zodResolver(SchemaValidateTaskType.taskType),
-    defaultValues: { name: '', description: '' },
+  } = useForm<FormPayloadPosition['Position']>({
+    resolver: zodResolver(SchemaValidatePosition.position),
+    defaultValues: { name: '' },
   });
 
   // ─── Form Handlers ───────────────────────────────────────────────────────
   const openCreateModal = () => {
     setEditingItem(null);
-    reset({ name: '', description: '' });
+    reset({ name: '' });
     setIsFormOpen(true);
   };
 
-  const openEditModal = (item: In_TaskType) => {
+  const openEditModal = (item: In_Position) => {
     setEditingItem(item);
     reset({
       name: item.name,
-      description: item.description ?? '',
     });
     setIsFormOpen(true);
   };
 
-  const onSubmit = async (values: FormPayloadTaskType['TaskType']) => {
+  const onSubmit = async (values: FormPayloadPosition['Position']) => {
     try {
       if (editingItem) {
         const updated = await updateMutation.mutateAsync({
@@ -103,7 +102,7 @@ export function TaskTypePage() {
         });
         dispatch(
           pushToast({
-            title: 'Task Type updated',
+            title: 'Position updated',
             description: updated.name,
             variant: 'success',
           }),
@@ -112,7 +111,7 @@ export function TaskTypePage() {
         const created = await createMutation.mutateAsync(values);
         dispatch(
           pushToast({
-            title: 'Task Type created',
+            title: 'Position created',
             description: created.name,
             variant: 'success',
           }),
@@ -124,7 +123,7 @@ export function TaskTypePage() {
         pushToast({
           title: 'Save failed',
           description:
-            err instanceof Error ? err.message : 'Unable to save task type.',
+            err instanceof Error ? err.message : 'Unable to save position.',
           variant: 'error',
         }),
       );
@@ -137,7 +136,7 @@ export function TaskTypePage() {
       const serverMessage = await deleteMutation.mutateAsync(deletingItem.id);
       dispatch(
         pushToast({
-          title: 'Task Type deleted',
+          title: 'Position deleted',
           description: serverMessage ?? deletingItem.name,
           variant: 'info',
         }),
@@ -150,7 +149,7 @@ export function TaskTypePage() {
           description:
             err instanceof Error
               ? err.message
-              : 'Unable to delete task type.',
+              : 'Unable to delete position.',
           variant: 'error',
         }),
       );
@@ -161,7 +160,7 @@ export function TaskTypePage() {
   const items = listQuery.data?.items ?? [];
   const pagination = listQuery.data?.pagination ?? null;
 
-  const columns: DataTableColumn<In_TaskType>[] = [
+  const columns: DataTableColumn<In_Position>[] = [
     {
       key: 'name',
       header: 'Name',
@@ -177,11 +176,11 @@ export function TaskTypePage() {
       ),
     },
     {
-      key: 'description',
-      header: 'Description',
+      key: 'slug',
+      header: 'Slug',
       render: (row) => (
         <p className="max-w-md truncate text-sm text-gray-600 dark:text-gray-400">
-          {row.description ?? '—'}
+          {row.slug}
         </p>
       ),
     },
@@ -204,7 +203,7 @@ export function TaskTypePage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.TASK_TYPE_DETAIL(row.id)))}
+            onClick={() => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.POSITION_DETAIL(row.id)))}
             title="View detail"
           >
             <Eye className="h-3.5 w-3.5" />
@@ -234,12 +233,12 @@ export function TaskTypePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Task Types"
-        description="Manage master data for task type classifications."
+        title="Position"
+        description="Manage master data for position classifications."
         actions={
           <Button variant="primary" onClick={openCreateModal}>
             <Plus className="h-4 w-4" />
-            Create Task Type
+            Create Position
           </Button>
         }
       />
@@ -261,17 +260,17 @@ export function TaskTypePage() {
                   type="search"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Search task types..."
-                  aria-label="Search task types"
+                  placeholder="Search position..."
+                  aria-label="Search position"
                   className="h-9 w-full rounded-lg border border-gray-200 bg-transparent pl-9 pr-3 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
                 />
               </div>
 
               {/* Sort & Rows */}
               <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                <label htmlFor="task-type-sort-by">Sort</label>
+                <label htmlFor="position-sort-by">Sort</label>
                 <select
-                  id="task-type-sort-by"
+                  id="position-sort-by"
                   value={sortBy}
                   onChange={(e) => {
                     setSortBy(e.target.value);
@@ -298,9 +297,9 @@ export function TaskTypePage() {
                   {orderBy}
                 </button>
 
-                <label htmlFor="task-type-limit">Rows</label>
+                <label htmlFor="position-limit">Rows</label>
                 <select
-                  id="task-type-limit"
+                  id="position-limit"
                   value={limit}
                   onChange={(e) => {
                     setLimit(Number(e.target.value));
@@ -317,10 +316,10 @@ export function TaskTypePage() {
               </div>
             </div>
           }
-          emptyTitle="No task types defined"
+          emptyTitle="No position defined"
           emptyAction={
             <Button variant="primary" size="sm" onClick={openCreateModal}>
-              Create Task Type
+              Create Position
             </Button>
           }
         />
@@ -370,11 +369,11 @@ export function TaskTypePage() {
       <Modal
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        title={editingItem ? 'Update Task Type' : 'Create Task Type'}
+        title={editingItem ? 'Update Position' : 'Create Position'}
         description={
           editingItem
-            ? `Update task type "${editingItem.name}"`
-            : 'Create a new task type classification'
+            ? `Update position "${editingItem.name}"`
+            : 'Create a new position classification'
         }
         footer={
           <>
@@ -383,17 +382,17 @@ export function TaskTypePage() {
             </Button>
             <Button
               type="submit"
-              form="task-type-form"
+              form="position-form"
               variant="primary"
               isLoading={createMutation.isPending || updateMutation.isPending}
             >
-              {editingItem ? 'Save Changes' : 'Create Task Type'}
+              {editingItem ? 'Save Changes' : 'Create Position'}
             </Button>
           </>
         }
       >
         <form
-          id="task-type-form"
+          id="position-form"
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
         >
@@ -404,13 +403,6 @@ export function TaskTypePage() {
             required
             {...register('name')}
           />
-          <Textarea
-            label="Description"
-            placeholder="e.g. External tasks carried out for clients or customers."
-            error={errors.description?.message}
-            required
-            {...register('description')}
-          />
         </form>
       </Modal>
 
@@ -419,8 +411,8 @@ export function TaskTypePage() {
         isOpen={Boolean(deletingItem)}
         onClose={() => setDeletingItem(null)}
         onConfirm={() => void handleConfirmDelete()}
-        title="Delete Task Type"
-        description={`Are you sure you want to delete the task type "${deletingItem?.name ?? ''}"? This action cannot be undone.`}
+        title="Delete Position"
+        description={`Are you sure you want to delete the position "${deletingItem?.name ?? ''}"? This action cannot be undone.`}
         isLoading={deleteMutation.isPending}
       />
     </div>

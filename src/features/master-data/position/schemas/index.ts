@@ -1,21 +1,16 @@
 import { z } from "zod";
 
-export const taskTypeDetail = z.object({
+export const positionDetail = z.object({
   id: z.string(),
   name: z.string(),
-  description: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((v) => v ?? null),
+  slug: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
 });
 
-export const SchemaValidateTaskType = {
-  taskType: z.object({
-    name: z.string().min(2, "Task type name is required"),
-    description: z.string().min(2, "Description is required"),
+export const SchemaValidatePosition = {
+  position: z.object({
+    name: z.string().min(2, "Position name is required"),
   }),
   paginationMeta: z.object({
     current_page: z.number(),
@@ -25,14 +20,14 @@ export const SchemaValidateTaskType = {
     has_next_page: z.boolean(),
     has_previous_page: z.boolean(),
   }),
-  taskTypeDetail,
+  positionDetail,
 };
 
-export type FormPayloadTaskType = {
-  TaskType: z.infer<typeof SchemaValidateTaskType.taskType>;
+export type FormPayloadPosition = {
+  Position: z.infer<typeof SchemaValidatePosition.position>;
 };
 
-export interface In_TaskTypeMutationPayload {
+export interface In_PositionMutationPayload {
   name: string;
-  description: string;
+  slug: string;
 }

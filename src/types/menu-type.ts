@@ -16,7 +16,8 @@ export type T_MenuIconKey =
   | 'tasks'
   | 'task-types'
   | 'task-statuses'
-  | 'task-attachments';
+  | 'task-attachments'
+  | 'positions';
 
 export interface In_PublicRouteMenuItem {
   id: string;

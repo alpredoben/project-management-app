@@ -40,6 +40,7 @@ import {
   UserCog,
   Users,
   X,
+  ShieldCogCorner
 } from 'lucide-react';
 import {
   ADMIN_MENU_GROUPS,
@@ -78,6 +79,7 @@ const ICON_MAP: Record<T_MenuIconKey, ComponentType<{ className?: string }>> = {
   'task-types': Tag,
   'task-statuses': ListChecks,
   'task-attachments': Paperclip,
+  'positions': ShieldCogCorner
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────

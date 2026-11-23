@@ -6,14 +6,14 @@ import {
   CircleAlert,
   ExternalLink,
   Globe,
-  Hash,
   ImageIcon,
   Tag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { workspaceApi } from '../api';
-import { formatDate, getStorageUrl } from '@/shared/libs/helper';
+import { formatDate, getPublicUrlExpression, slashed } from '@/shared/libs/helper';
+import { ROUTE_PATH_LIST } from '@/shared/constants';
 
 // ─── Detail Field Component ──────────────────────────────────────────────────
 
@@ -68,9 +68,9 @@ export function WorkspaceDetailPage() {
   const navigate = useNavigate();
   const [logoError, setLogoError] = useState(false);
 
-  const findQuery = workspaceApi.query.useWorkspaceFind(id ?? null);
+  const findQuery = workspaceApi.query.useFindById(id ?? null);
 
-  const goBack = () => navigate('/admin/workspace');
+  const goBack = () => navigate(slashed(ROUTE_PATH_LIST.WORKSPACE.WORKSPACE));
 
   // ── Missing ID guard ──────────────────────────────────────────────────────
   if (!id) {
@@ -166,7 +166,7 @@ export function WorkspaceDetailPage() {
 
   // ── Data Loaded ───────────────────────────────────────────────────────────
   const data = findQuery.data;
-  const fullLogoUrl = data.logo_url ? getStorageUrl(data.logo_url) : null;
+  const fullLogoUrl = data.logo_url ? getPublicUrlExpression(data.logo_url) : null;
 
   const initials = data.name
     .trim()
@@ -180,7 +180,7 @@ export function WorkspaceDetailPage() {
     <div className="space-y-6">
       <PageHeader
         title="Workspace Detail"
-        description="Detailed specification of workspace record retrieved via REST API."
+        description="Detailed specification of workspace"
         actions={
           <Button variant="outline" onClick={goBack}>
             <ArrowLeft className="h-4 w-4" />
@@ -213,9 +213,6 @@ export function WorkspaceDetailPage() {
                 <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 dark:text-brand-300">
                   Workspace
                 </span>
-                <span className="inline-flex items-center rounded-md bg-white/80 dark:bg-gray-800 px-2 py-0.5 text-xs font-mono font-medium text-gray-700 dark:text-gray-300 shadow-xs border border-gray-200 dark:border-gray-700">
-                  /{data.slug}
-                </span>
               </div>
               <h2 className="mt-1 text-2xl font-bold text-gray-900 dark:text-white/90 truncate">
                 {data.name}
@@ -226,32 +223,18 @@ export function WorkspaceDetailPage() {
             </div>
           </div>
 
-          {/* API endpoint badge */}
-          <div className="shrink-0 self-start rounded-xl border border-white/80 bg-white/80 px-4 py-2.5 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-900/70 sm:self-auto">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400">
-              Endpoint
-            </p>
-            <p className="mt-0.5 font-mono text-xs font-semibold text-gray-700 dark:text-gray-200">
-              GET /api/v1/workspace/find/{id}
-            </p>
-          </div>
+          
         </div>
       </section>
 
       {/* Detail Fields Card */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/[0.02]">
+        <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/2">
           <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
             Record Information
           </h3>
         </div>
         <div className="grid gap-4 p-6 sm:grid-cols-2">
-          <DetailField
-            icon={<Hash className="h-4 w-4" />}
-            label="Workspace ID"
-            value={data.id}
-            mono
-          />
           <DetailField
             icon={<Tag className="h-4 w-4" />}
             label="Name"
@@ -300,23 +283,6 @@ export function WorkspaceDetailPage() {
             value={formatDate(new Date(data.updated_at).toLocaleString())}
             mono
           />
-        </div>
-      </div>
-
-      {/* Raw JSON Preview */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-gray-800 dark:bg-white/[0.02]">
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
-            Raw API Response
-          </h3>
-          <p className="mt-0.5 text-xs text-gray-400">
-            GET /api/v1/workspace/find/{id}
-          </p>
-        </div>
-        <div className="p-6">
-          <pre className="overflow-x-auto rounded-xl border border-gray-100 bg-gray-50 p-4 font-mono text-xs leading-relaxed text-gray-700 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
-            {JSON.stringify(data, null, 2)}
-          </pre>
         </div>
       </div>
     </div>

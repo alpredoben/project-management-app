@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { taskTypeApi } from '../api';
+import { positionApi } from '../api';
 import { formatDate, slashed } from '@/shared/libs/helper';
 import { ROUTE_PATH_LIST } from '@/shared/constants';
 
@@ -58,24 +58,24 @@ function SkeletonField() {
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
-export function TaskTypeDetailPage() {
+export function PositionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const findQuery = taskTypeApi.query.useFindById(id ?? null);
+  const findQuery = positionApi.query.useFindById(id ?? null);
 
-  const goBack = () => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.TASK_TYPE));
+  const goBack = () => navigate(slashed(ROUTE_PATH_LIST.MASTER_DATA.POSITION));
 
   // ── Missing ID guard ──────────────────────────────────────────────────────
   if (!id) {
     return (
       <div className="space-y-5">
         <PageHeader
-          title="Task Type Detail"
-          description="View detailed information about a task type."
+          title="Position Detail"
+          description="View detailed information about a position."
         />
         <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
-          The task type ID is missing from the URL.
+          The position ID is missing from the URL.
           <Button
             variant="outline"
             size="sm"
@@ -94,8 +94,8 @@ export function TaskTypeDetailPage() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="Task Type Detail"
-          description="Loading task type information..."
+          title="Position Detail"
+          description="Loading position information..."
           actions={
             <Button variant="outline" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
@@ -122,8 +122,8 @@ export function TaskTypeDetailPage() {
     return (
       <div className="space-y-5">
         <PageHeader
-          title="Task Type Detail"
-          description="View detailed information about a task type."
+          title="Position Detail"
+          description="View detailed information about a position."
           actions={
             <Button variant="outline" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" />
@@ -135,7 +135,7 @@ export function TaskTypeDetailPage() {
           <div className="flex items-start gap-3 text-red-700 dark:text-red-300">
             <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
             <div className="min-w-0">
-              <p className="font-semibold">Unable to load task type</p>
+              <p className="font-semibold">Unable to load position</p>
               <p className="mt-1 wrap-break-word text-sm">
                 {findQuery.error?.message ?? 'The record could not be found.'}
               </p>
@@ -164,8 +164,8 @@ export function TaskTypeDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Task Type Detail"
-        description="Detailed view of a task type record"
+        title="Position Detail"
+        description="Detailed view of a position record"
         actions={
           <Button variant="outline" onClick={goBack}>
             <ArrowLeft className="h-4 w-4" />
@@ -184,13 +184,13 @@ export function TaskTypeDetailPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 dark:text-brand-300">
-                Task Type
+                Position
               </p>
               <h2 className="mt-1 font-mono text-2xl font-bold text-gray-900 dark:text-white/90">
                 {data.name}
               </h2>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {data.description ?? 'No description provided.'}
+                {data.slug ?? 'No slug provided.'}
               </p>
             </div>
           </div>
@@ -213,8 +213,8 @@ export function TaskTypeDetailPage() {
           />
           <DetailField
             icon={<FileText className="h-4 w-4" />}
-            label="Description"
-            value={data.description ?? '—'}
+            label="Slug"
+            value={data.slug ?? '—'}
           />
           <DetailField
             icon={<CalendarClock className="h-4 w-4" />}

@@ -1,20 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { httpRequest } from "@/shared/libs/http";
-import type { In_PaginatedResult, In_TaskType, In_QueryParam } from "@/types/api-type";
+import type { In_PaginatedResult, In_QueryParam, In_Position } from "@/types/api-type";
 import { API_ENDPOINTS, getApiUrl } from "@/config/api-config";
 import {
-  SchemaValidateTaskType,
-  type FormPayloadTaskType,
+  SchemaValidatePosition,
+  type FormPayloadPosition,
 } from "../schemas";
 
 
 // Query Key
-export const taskTypeKeys = {
-  all: ["task-types"] as const,
+export const positionKeys = {
+  all: ["positions"] as const,
   list: (params?: In_QueryParam) =>
-    ["task-types", "list", params ?? {}] as const,
-  detail: (id: string) => ["task-types", "detail", id] as const,
+    ["positions", "list", params ?? {}] as const,
+  detail: (id: string) => ["positions", "detail", id] as const,
 };
 
 // Helper
@@ -36,30 +36,29 @@ const buildQueryString = (params?: In_QueryParam): string => {
 };
 
 const payloadOfMutation = (
-  values: FormPayloadTaskType["TaskType"],
+  values: FormPayloadPosition["Position"],
 ) => ({
   name: values.name.trim(),
-  description: values.description.trim(),
 });
 
 // ─── API ─────────────────────────────────────────────────────────────────────
 
-export const taskTypeApi = {
+export const positionApi = {
   query: {
     useFetchPaginationList: (params?: In_QueryParam) => {
       return useQuery({
-        queryKey: taskTypeKeys.list(params),
+        queryKey: positionKeys.list(params),
         queryFn: async ({
           signal,
-        }): Promise<In_PaginatedResult<In_TaskType>> => {
+        }): Promise<In_PaginatedResult<In_Position>> => {
           const qs = buildQueryString(params);
-          const endpoint = `${getApiUrl(API_ENDPOINTS.TASK_TYPE.LIST)}${qs}`;
+          const endpoint = `${getApiUrl(API_ENDPOINTS.POSITION.LIST)}${qs}`;
           const res = await httpRequest<unknown>(endpoint, { signal });
           const items = z
-            .array(SchemaValidateTaskType.taskTypeDetail)
+            .array(SchemaValidatePosition.positionDetail)
             .parse(res.data);
           const pagination = res.meta?.pagination
-            ? SchemaValidateTaskType.paginationMeta.parse(
+            ? SchemaValidatePosition.paginationMeta.parse(
                 res.meta.pagination,
               )
             : null;
@@ -72,13 +71,13 @@ export const taskTypeApi = {
 
     useFindById: (id: string | null) => {
       return useQuery({
-        queryKey: taskTypeKeys.detail(id ?? ""),
-        queryFn: async ({ signal }): Promise<In_TaskType> => {
+        queryKey: positionKeys.detail(id ?? ""),
+        queryFn: async ({ signal }): Promise<In_Position> => {
           const res = await httpRequest<unknown>(
-            getApiUrl(API_ENDPOINTS.TASK_TYPE.FIND(id)),
+            getApiUrl(API_ENDPOINTS.POSITION.FIND(id)),
             { signal },
           );
-          return SchemaValidateTaskType.taskTypeDetail.parse(res.data);
+          return SchemaValidatePosition.positionDetail.parse(res.data);
         },
         enabled: Boolean(id),
       });
@@ -90,19 +89,19 @@ export const taskTypeApi = {
       const qc = useQueryClient();
       return useMutation({
         mutationFn: async (
-          values: FormPayloadTaskType["TaskType"],
-        ): Promise<In_TaskType> => {
+          values: FormPayloadPosition["Position"],
+        ): Promise<In_Position> => {
           const res = await httpRequest<unknown>(
-            getApiUrl(API_ENDPOINTS.TASK_TYPE.CREATE),
+            getApiUrl(API_ENDPOINTS.POSITION.CREATE),
             {
               method: "POST",
               body: payloadOfMutation(values),
             },
           );
-          return SchemaValidateTaskType.taskTypeDetail.parse(res.data);
+          return SchemaValidatePosition.positionDetail.parse(res.data);
         },
         onSuccess: () => {
-          void qc.invalidateQueries({ queryKey: taskTypeKeys.all });
+          void qc.invalidateQueries({ queryKey: positionKeys.all });
         },
       });
     },
@@ -115,21 +114,21 @@ export const taskTypeApi = {
           values,
         }: {
           id: string;
-          values: FormPayloadTaskType["TaskType"];
-        }): Promise<In_TaskType> => {
+          values: FormPayloadPosition["Position"];
+        }): Promise<In_Position> => {
           const res = await httpRequest<unknown>(
-            getApiUrl(API_ENDPOINTS.TASK_TYPE.UPDATE(id)),
+            getApiUrl(API_ENDPOINTS.POSITION.UPDATE(id)),
             {
               method: "PUT",
               body: payloadOfMutation(values),
             },
           );
-          return SchemaValidateTaskType.taskTypeDetail.parse(res.data);
+          return SchemaValidatePosition.positionDetail.parse(res.data);
         },
         onSuccess: (_data, vars) => {
-          void qc.invalidateQueries({ queryKey: taskTypeKeys.all });
+          void qc.invalidateQueries({ queryKey: positionKeys.all });
           void qc.invalidateQueries({
-            queryKey: taskTypeKeys.detail(vars.id),
+            queryKey: positionKeys.detail(vars.id),
           });
         },
       });
@@ -140,13 +139,13 @@ export const taskTypeApi = {
       return useMutation({
         mutationFn: async (id: string): Promise<string | undefined> => {
           const res = await httpRequest<null>(
-            getApiUrl(API_ENDPOINTS.TASK_TYPE.DELETE(id)),
+            getApiUrl(API_ENDPOINTS.POSITION.DELETE(id)),
             { method: "DELETE" },
           );
           return res.message;
         },
         onSuccess: () => {
-          void qc.invalidateQueries({ queryKey: taskTypeKeys.all });
+          void qc.invalidateQueries({ queryKey: positionKeys.all });
         },
       });
     },

@@ -74,6 +74,20 @@ export const API_ENDPOINTS  = {
         UPDATE: (id: string | null) => pathById('task-type/update', id),
         DELETE: (id: string | null) => pathById('task-type/delete', id),
     },
+    POSITION: {
+        LIST: 'position/list',
+        FIND: (id: string | null) => pathById('position/find', id),
+        CREATE: 'position/create',
+        UPDATE: (id: string | null) => pathById('position/update', id),
+        DELETE: (id: string | null) => pathById('position/delete', id),
+    },
+    WORKSPACE_MEMBERS: {
+        LIST: 'workspace-members/list',
+        FIND: (id: string | null) => pathById('workspace-members/find', id),
+        CREATE: 'workspace-members/create',
+        UPDATE: (id: string | null) => pathById('workspace-members/update', id),
+        DELETE: (id: string | null) => pathById('workspace-members/delete', id),
+    },
 } as const;
 
 export const getApiUrl = (endpoint: string): string => {

@@ -17,7 +17,8 @@ export const ROUTE_PATH_LIST = {
     WORKSPACE: {
         WORKSPACE: 'admin/workspace',
         WORKSPACE_DETAIL: (id: string = ':id') => `admin/workspace/${id}`,
-
+        WORKSPACE_MEMBERS: 'admin/workspace-members',
+        WORKSPACE_MEMBERS_DETAIL: (id: string = ':id') => `admin/workspace-members/${id}`,
     },
     ACCESS_CONTROL: {
         USER: 'admin/users',
@@ -34,5 +35,7 @@ export const ROUTE_PATH_LIST = {
         TAKS_STATUS_DETAIL: (id: string = ':id') => `admin/task-status/${id}`,
         TASK_TYPE: 'admin/task-type',
         TASK_TYPE_DETAIL: (id: string = ':id') => `admin/task-type/${id}`,
+        POSITION: 'admin/position',
+        POSITION_DETAIL: (id: string = ':id') => `admin/position/${id}`,
     }
 } as const;
