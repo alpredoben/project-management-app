@@ -125,6 +125,76 @@ export const ADMIN_ROUTE_LIST: readonly In_AdminRouteNode[] = [
     ],
   },
   {
+    id: "project-group",
+    label: "Project",
+    path: null,
+    description: null,
+    icon: null,
+    component: null,
+    items: [
+      {
+        id: "projects",
+        label: "Project",
+        path: slashed(ROUTE_PATH_LIST.PROJECT.PROJECT),
+        title: "Projects",
+        description:
+          "Monitor portfolio deliverables, milestones, workspace associations, and project statuses.",
+        icon: "projects",
+        apiPrefix: "/api/v1/projects",
+        component: lazyPage(
+          () => import("@/features/projects/pages/ProjectPage"),
+          "ProjectPage",
+        ),
+        items: [
+          {
+            id: "project-detail",
+            label: "Project Detail",
+            path: slashed(ROUTE_PATH_LIST.PROJECT.PROJECT_DETAIL()),
+            title: "Project Detail",
+            description: "Detail of project.",
+            icon: "projects",
+            apiPrefix: "/api/v1/projects",
+            component: lazyPage(
+              () => import("@/features/projects/pages/ProjectDetailPage"),
+              "ProjectDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+      {
+        id: "milestones",
+        label: "Milestone",
+        path: slashed(ROUTE_PATH_LIST.MILESTONE.MILESTONE),
+        title: "Milestones",
+        description:
+          "Plan and deliver key project deliverables, target deadlines, and sprint milestones.",
+        icon: "milestones",
+        apiPrefix: "/api/v1/milestone",
+        component: lazyPage(
+          () => import("@/features/milestone/pages/MilestonePage"),
+          "MilestonePage",
+        ),
+        items: [
+          {
+            id: "milestone-detail",
+            label: "Milestone Detail",
+            path: slashed(ROUTE_PATH_LIST.MILESTONE.MILESTONE_DETAIL()),
+            title: "Milestone Detail",
+            description: "Detail of milestone.",
+            icon: "milestones",
+            apiPrefix: "/api/v1/milestone",
+            component: lazyPage(
+              () => import("@/features/milestone/pages/MilestoneDetailPage"),
+              "MilestoneDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "access-control",
     label: "Access Control",
     path: null,

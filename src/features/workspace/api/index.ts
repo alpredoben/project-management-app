@@ -123,7 +123,7 @@ export const workspaceApi = {
           const res = await httpRequest<unknown>(
             getApiUrl(API_ENDPOINTS.WORKSPACE.UPDATE(id)),
             {
-              method: "POST",
+              method: "PUT",
               body: formData,
             },
           );

@@ -101,7 +101,7 @@ function getInitials(name?: string | null): string {
     .toUpperCase();
 }
 
-// ─── Nav Item Component ───────────────────────────────────────────────────────
+// ─── Sidebar Nav Item ─────────────────────────────────────────────────────────
 
 interface SidebarNavItemProps {
   item: {
@@ -126,69 +126,62 @@ function SidebarNavItem({ item, collapsed, onNavigate }: SidebarNavItemProps) {
         onClick={onNavigate}
         className={({ isActive }) =>
           cn(
-            'group relative flex items-center rounded-xl text-sm font-medium select-none',
+            'group relative flex items-center rounded-xl text-[13px] font-medium select-none',
             'transition-all duration-200 ease-out',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40',
             collapsed
               ? 'h-11 w-11 mx-auto justify-center'
-              : 'px-3 py-2.5 gap-3 w-full',
+              : 'px-3 py-2 gap-3 w-full',
             isActive
               ? [
-                  'bg-linear-to-r from-brand-500 to-brand-600 text-white',
-                  'shadow-lg shadow-brand-500/25 dark:shadow-brand-500/20',
+                  /* Light: soft blue pill */
+                  'bg-brand-500 text-white shadow-md shadow-brand-500/20',
+                  /* Dark: gradient pill with glow */
+                  'dark:bg-gradient-to-r dark:from-brand-600 dark:to-brand-500',
+                  'dark:shadow-lg dark:shadow-brand-500/15',
                   'font-semibold',
                 ]
               : [
-                  'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80',
-                  'dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/6',
-                  !collapsed && 'hover:translate-x-1',
+                  'text-gray-500 hover:text-gray-900 hover:bg-gray-100/70',
+                  'dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-white/[0.06]',
                 ],
           )
         }
       >
         {({ isActive }) => (
           <>
-            {/* Left accent bar on active when expanded */}
-            {!collapsed && isActive && (
-              <span className="absolute -left-2 top-2 bottom-2 w-1 rounded-r-full bg-brand-400 shadow-sm" />
-            )}
-
-            {/* Icon */}
             <span
               className={cn(
-                'flex shrink-0 items-center justify-center transition-transform duration-200',
-                'group-hover/navitem:scale-110',
+                'flex shrink-0 items-center justify-center transition-all duration-200',
                 isActive
                   ? 'text-white'
-                  : 'text-gray-500 group-hover/navitem:text-gray-800 dark:text-gray-400 dark:group-hover/navitem:text-gray-200',
+                  : 'text-gray-400 group-hover/navitem:text-gray-700 dark:text-gray-500 dark:group-hover/navitem:text-gray-300',
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-[18px] w-[18px]" />
             </span>
 
-            {/* Label */}
             {!collapsed && (
               <span className="truncate leading-none tracking-tight">
                 {item.label}
               </span>
             )}
 
-            {/* Active dot when collapsed */}
             {collapsed && isActive && (
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-brand-300 ring-2 ring-white dark:ring-gray-900" />
+              <span className="absolute -right-0.5 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-brand-400 dark:bg-brand-400" />
             )}
           </>
         )}
       </NavLink>
 
-      {/* Floating Tooltip when Sidebar is Collapsed */}
+      {/* Tooltip when collapsed */}
       {collapsed && (
         <div
           role="tooltip"
           className={cn(
             'pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50',
             'whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium',
-            'bg-gray-900 text-white shadow-xl shadow-gray-950/20',
+            'bg-gray-900 text-white shadow-xl',
             'dark:bg-gray-800 dark:text-gray-100 dark:border dark:border-gray-700/60',
             'opacity-0 -translate-x-2 group-hover/navitem:opacity-100 group-hover/navitem:translate-x-0',
             'transition-all duration-150 ease-out',
@@ -196,11 +189,10 @@ function SidebarNavItem({ item, collapsed, onNavigate }: SidebarNavItemProps) {
         >
           <div className="font-semibold">{item.label}</div>
           {item.description && (
-            <div className="text-[10px] text-gray-400 dark:text-gray-400 font-normal max-w-45 truncate">
+            <div className="text-[10px] text-gray-400 font-normal max-w-45 truncate">
               {item.description}
             </div>
           )}
-          {/* Tooltip arrow */}
           <span className="absolute -left-1 top-1/2 -translate-y-1/2 border-y-4 border-y-transparent border-r-4 border-r-gray-900 dark:border-r-gray-800" />
         </div>
       )}
@@ -230,7 +222,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Mobile drawer animation state
+  // Mobile drawer
   const [mobileVisible, setMobileVisible] = useState(false);
   const [mobileAnimating, setMobileAnimating] = useState(false);
 
@@ -240,7 +232,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
 
-  // ── User Profile Sync ──────────────────────────────────────────────────────
+  // ── User Profile ──────────────────────────────────────────────────────────
   const meQuery = authApi.query.useGetProfile(isAuthenticated);
   useEffect(() => {
     if (meQuery.data) {
@@ -248,7 +240,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     }
   }, [dispatch, meQuery.data]);
 
-  // ── Scroll Detector for Topbar Elevation ───────────────────────────────────
+  // ── Scroll Detector ───────────────────────────────────────────────────────
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 8);
@@ -257,7 +249,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ── Mobile Sidebar Open/Close Smooth Transitions ───────────────────────────
+  // ── Mobile Sidebar Transitions ────────────────────────────────────────────
   useEffect(() => {
     let openFrame1: number | undefined;
     let openFrame2: number | undefined;
@@ -270,7 +262,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     } else {
       const closeFrame = requestAnimationFrame(() => setMobileAnimating(false));
       const timer = window.setTimeout(() => setMobileVisible(false), 300);
-
       return () => {
         cancelAnimationFrame(closeFrame);
         window.clearTimeout(timer);
@@ -283,7 +274,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     };
   }, [isSidebarOpen]);
 
-  // ── Close dropdowns on route changes ───────────────────────────────────────
+  // ── Close dropdowns on route changes ──────────────────────────────────────
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       setIsSearchOpen(false);
@@ -291,11 +282,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       setIsNotificationsOpen(false);
       setMenuQuery('');
     });
-
     return () => cancelAnimationFrame(frame);
   }, [location.pathname]);
 
-  // ── Keyboard Shortcuts & Outside Clicks ────────────────────────────────────
+  // ── Keyboard Shortcuts & Outside Clicks ───────────────────────────────────
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -330,7 +320,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     };
   }, []);
 
-  // ── Fullscreen Toggle ──────────────────────────────────────────────────────
+  // ── Fullscreen ────────────────────────────────────────────────────────────
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
@@ -345,7 +335,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return () => document.removeEventListener('fullscreenchange', onFsChange);
   }, []);
 
-  // ── Menu Filter ────────────────────────────────────────────────────────────
+  // ── Menu Filter ───────────────────────────────────────────────────────────
   const allMenuItems = useMemo(() => getAllAdminMenuItems(), []);
   const filteredMenuItems = useMemo(() => {
     const q = menuQuery.trim().toLowerCase();
@@ -364,12 +354,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     setCollapsedGroups((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // ── Logout ─────────────────────────────────────────────────────────────────
+  // ── Logout ────────────────────────────────────────────────────────────────
   const handleLogout = async () => {
     try {
       await httpRequest('/auth/logout', { method: 'POST' });
     } catch {
-      // Clear local session even if token expired
+      // ignore
     } finally {
       dispatch(clearSession());
       dispatch(
@@ -385,70 +375,58 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const userInitials = getInitials(user?.name);
 
-  // ── Sidebar Inner Renderer ─────────────────────────────────────────────────
+  // ─── Sidebar Renderer ──────────────────────────────────────────────────────
   const renderSidebar = (isMobile = false) => {
     const collapsed = !isMobile && isSidebarCollapsed;
 
     return (
-      <div className="flex h-full flex-col bg-white dark:bg-[#0f1117] select-none">
-        {/* ── Brand Header ──────────────────────────────────────────────── */}
+      <div className="flex h-full flex-col select-none">
+        {/* ── Brand Header ──────────────────────────────────────────── */}
         <div
           className={cn(
-            'flex h-16 shrink-0 items-center border-b border-gray-100 dark:border-gray-800/80',
+            'flex h-16 shrink-0 items-center',
             'transition-[padding] duration-200',
-            collapsed ? 'justify-center px-2' : 'justify-between px-5',
+            collapsed ? 'justify-center px-2' : 'justify-between px-4',
           )}
         >
           <Link
             to="/admin"
             onClick={() => dispatch(setSidebarOpen(false))}
-            className="flex items-center gap-3 group/brand shrink-0"
+            className="flex items-center gap-2.5 group/brand shrink-0"
           >
-            {/* Glowing Brand Icon */}
-            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-600 via-brand-500 to-indigo-500 text-white shadow-md shadow-brand-500/25 transition-transform duration-300 group-hover/brand:scale-105">
-              <Layers className="h-5 w-5" />
-              {/* Online pulse dot */}
-              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 ring-2 ring-white dark:ring-gray-900" />
-              </span>
+            {/* Brand Icon - Matching template's play/arrow icon */}
+            <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 via-brand-600 to-indigo-600 text-white shadow-lg shadow-brand-500/30 transition-transform duration-300 group-hover/brand:scale-105">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-0.5">
+                <path d="M4 2L13 8L4 14V2Z" fill="currentColor" />
+              </svg>
             </div>
 
-            {/* Brand Title */}
             {!collapsed && (
               <div className="min-w-0 transition-opacity duration-200">
-                <div className="flex items-center gap-2">
-                  <span className="font-display text-base font-bold tracking-tight text-gray-900 dark:text-white">
-                    MILE-DEV
-                  </span>
-                  <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
-                    PM
-                  </span>
-                </div>
-                <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500 truncate">
-                  Enterprise Workspace
-                </p>
+                <span className="font-display text-[15px] font-bold tracking-tight text-gray-900 dark:text-white">
+                  Dashboard
+                </span>
               </div>
             )}
           </Link>
 
-          {/* Mobile close button */}
+          {/* Mobile close */}
           {isMobile && (
             <button
               type="button"
               onClick={() => dispatch(setSidebarOpen(false))}
               aria-label="Close navigation drawer"
-              className="cursor-pointer rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors"
+              className="cursor-pointer rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/5 dark:hover:text-gray-200 transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
           )}
         </div>
 
-        {/* ── Navigation Links ──────────────────────────────────────────── */}
+        {/* ── Navigation ──────────────────────────────────────────── */}
         <nav
           aria-label="Admin sidebar navigation"
-          className="no-scrollbar flex-1 overflow-y-auto px-3 py-4 space-y-6"
+          className="custom-scrollbar flex-1 overflow-y-auto px-3 py-3 space-y-5"
         >
           {ADMIN_MENU_GROUPS.map((group) => {
             const visibleItems = group.items.filter((item) => !item.hidden);
@@ -456,28 +434,28 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             const isGroupCollapsed = Boolean(collapsedGroups[group.id]);
 
             return (
-              <div key={group.id} className="space-y-1">
+              <div key={group.id} className="space-y-0.5">
                 {/* Group Heading */}
                 {!collapsed ? (
                   <button
                     type="button"
                     onClick={() => toggleGroup(group.id)}
                     aria-expanded={!isGroupCollapsed}
-                    className="flex w-full cursor-pointer items-center justify-between px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                    className="flex w-full cursor-pointer items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 transition-colors"
                   >
                     <span>{group.label}</span>
                     <ChevronDown
                       className={cn(
-                        'h-3.5 w-3.5 text-gray-400 transition-transform duration-200 ease-out',
+                        'h-3 w-3 text-gray-400 transition-transform duration-200 ease-out',
                         isGroupCollapsed && '-rotate-90',
                       )}
                     />
                   </button>
                 ) : (
-                  <div className="my-2 mx-auto w-6 border-t border-gray-200/80 dark:border-gray-800" />
+                  <div className="my-2 mx-auto w-5 border-t border-gray-200/60 dark:border-gray-700/40" />
                 )}
 
-                {/* Smooth Accordion Body (CSS Grid Rows Animation) */}
+                {/* Items */}
                 <div
                   className={cn(
                     'grid transition-[grid-template-rows,opacity] duration-250 ease-out',
@@ -487,7 +465,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   )}
                 >
                   <div className="overflow-hidden">
-                    <ul className="space-y-1 pt-0.5">
+                    <ul className="space-y-0.5 pt-0.5">
                       {visibleItems.map((item) => (
                         <SidebarNavItem
                           key={item.id}
@@ -504,24 +482,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           })}
         </nav>
 
-        {/* ── Sidebar Footer / User Profile ─────────────────────────────── */}
-        <div className="shrink-0 border-t border-gray-100 p-3 dark:border-gray-800/80">
+        {/* ── Sidebar Footer ─────────────────────────────────────── */}
+        <div className="shrink-0 border-t border-gray-100 p-3 dark:border-white/[0.06]">
           {!collapsed ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-gray-50/80 p-2.5 dark:bg-white/3 border border-gray-100 dark:border-gray-800/60">
+            <div className="flex items-center gap-2.5 rounded-xl p-2.5 hover:bg-gray-50 dark:hover:bg-white/[0.04] transition-colors">
               {/* Avatar */}
               {user?.avatar_url ? (
                 <img
                   src={user.avatar_url}
                   alt={user.name}
-                  className="h-9 w-9 shrink-0 rounded-xl object-cover ring-2 ring-brand-500/20"
+                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-brand-500/20"
                 />
               ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-brand-500/20">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm">
                   {userInitials}
                 </div>
               )}
 
-              {/* User text */}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-semibold text-gray-900 dark:text-white/90">
                   {user?.name ?? 'Authenticated User'}
@@ -531,7 +508,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </p>
               </div>
 
-              {/* Sign out mini icon button */}
               <button
                 type="button"
                 onClick={() => void handleLogout()}
@@ -560,23 +536,26 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     );
   };
 
-  // ── Render Full Layout ──────────────────────────────────────────────────────
+  // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex bg-gray-50/70 text-gray-900 dark:bg-[#0c0d12] dark:text-white/90 font-sans antialiased">
-      {/* ── Desktop Collapsible Sidebar ───────────────────────────────────── */}
+    <div className="min-h-screen flex bg-surface-light text-gray-900 dark:bg-surface-dark dark:text-white/90 font-sans antialiased">
+      {/* ── Desktop Sidebar ───────────────────────────────────────────── */}
       <aside
         className={cn(
           'hidden lg:flex lg:flex-col lg:shrink-0',
           'sticky top-0 h-screen z-30',
-          'border-r border-gray-200/70 bg-white dark:border-gray-800/80 dark:bg-[#0f1117]',
+          /* Light: white sidebar with right border */
+          'bg-white border-r border-gray-200/70',
+          /* Dark: deep dark sidebar */
+          'dark:bg-surface-dark-sidebar dark:border-white/[0.06]',
           'transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
-          isSidebarCollapsed ? 'lg:w-19' : 'lg:w-66',
+          isSidebarCollapsed ? 'lg:w-19' : 'lg:w-60',
         )}
       >
         {renderSidebar(false)}
       </aside>
 
-      {/* ── Mobile Slide-Over Sidebar ─────────────────────────────────────── */}
+      {/* ── Mobile Slide-Over ─────────────────────────────────────────── */}
       {mobileVisible && (
         <div
           role="dialog"
@@ -590,14 +569,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             if (e.target === e.currentTarget) dispatch(setSidebarOpen(false));
           }}
         >
-          {/* Backdrop Blur */}
           <div className="absolute inset-0 bg-gray-950/50 backdrop-blur-sm" />
 
-          {/* Drawer container */}
           <aside
             className={cn(
-              'relative z-10 h-full w-68 flex flex-col',
-              'border-r border-gray-200/80 bg-white dark:border-gray-800 dark:bg-[#0f1117]',
+              'relative z-10 h-full w-64 flex flex-col',
+              'bg-white dark:bg-surface-dark-sidebar',
+              'border-r border-gray-200/80 dark:border-white/[0.06]',
               'shadow-2xl shadow-gray-950/30',
               'transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
               mobileAnimating ? 'translate-x-0' : '-translate-x-full',
@@ -608,31 +586,32 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       )}
 
-      {/* ── Main Viewport Area ────────────────────────────────────────────── */}
+      {/* ── Main Viewport ──────────────────────────────────────────────── */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* ── Sticky Modern Header ────────────────────────────────────────── */}
+        {/* ── Top Header ─────────────────────────────────────────────── */}
         <header
           className={cn(
             'sticky top-0 z-20 flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8',
-            'border-b border-gray-200/70 dark:border-gray-800/80',
-            'bg-white/85 dark:bg-[#0f1117]/85 backdrop-blur-xl',
+            /* Light: clean white header */
+            'bg-white/90 border-b border-gray-200/60',
+            /* Dark: deep dark header */
+            'dark:bg-surface-dark/90 dark:border-white/[0.06]',
+            'backdrop-blur-xl',
             'transition-shadow duration-200',
-            isScrolled && 'shadow-sm shadow-gray-900/5 dark:shadow-black/20',
+            isScrolled && 'shadow-sm shadow-gray-900/5 dark:shadow-black/30',
           )}
         >
-          {/* Left section: Collapse Toggle + Command Search */}
+          {/* Left: Toggle + Search */}
           <div className="flex min-w-0 flex-1 items-center gap-3">
-            {/* Desktop Sidebar Collapse Toggle */}
+            {/* Desktop Collapse Toggle */}
             <button
               type="button"
               onClick={() => dispatch(toggleSidebarCollapsed())}
               aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               className={cn(
                 'hidden lg:flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl',
-                'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
-                'hover:border-brand-200 hover:bg-brand-50/50 hover:text-brand-600',
-                'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400',
-                'dark:hover:border-brand-800 dark:hover:bg-brand-500/10 dark:hover:text-brand-300',
+                'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
+                'dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/[0.06]',
                 'transition-all duration-150',
               )}
             >
@@ -643,24 +622,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               )}
             </button>
 
-            {/* Mobile Sidebar Hamburger Toggle */}
+            {/* Mobile Hamburger */}
             <button
               type="button"
               onClick={() => dispatch(setSidebarOpen(true))}
               aria-label="Open mobile navigation"
               className={cn(
                 'flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl lg:hidden',
-                'border border-gray-200/80 bg-white text-gray-500',
-                'hover:bg-gray-100 hover:text-gray-800 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5',
+                'text-gray-400 hover:bg-gray-100 hover:text-gray-700',
+                'dark:text-gray-500 dark:hover:bg-white/[0.06] dark:hover:text-gray-200',
                 'transition-colors',
               )}
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
 
-            {/* Global Command Search Box */}
+            {/* Search Box */}
             <div ref={searchBoxRef} className="relative w-full max-w-sm">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               <input
                 ref={searchInputRef}
                 type="search"
@@ -680,16 +659,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 placeholder="Search modules, pages, APIs..."
                 aria-label="Quick search navigation"
                 className={cn(
-                  'h-9.5 w-full rounded-xl pl-9.5 pr-14 text-xs font-medium',
-                  'border border-gray-200/80 bg-gray-50/70 text-gray-800 placeholder:text-gray-400',
-                  'transition-all duration-200 ease-out',
-                  'focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/10',
-                  'dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-gray-500',
-                  'dark:focus:border-brand-500 dark:focus:bg-[#0f1117] dark:focus:ring-brand-500/20',
+                  'h-9 w-full rounded-xl pl-9 pr-14 text-xs font-medium',
+                  'border border-gray-200/80 bg-gray-50/80 text-gray-800 placeholder:text-gray-400',
+                  'transition-all duration-200',
+                  'focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-3 focus:ring-brand-500/10',
+                  'dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/90 dark:placeholder:text-gray-500',
+                  'dark:focus:border-brand-500/60 dark:focus:bg-white/[0.06] dark:focus:ring-brand-500/15',
                 )}
               />
 
-              {/* Clear button or Shortcut badge */}
               {menuQuery ? (
                 <button
                   type="button"
@@ -702,22 +680,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <X className="h-3.5 w-3.5" />
                 </button>
               ) : (
-                <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 font-mono text-[10px] font-semibold text-gray-400 sm:inline-flex dark:border-gray-700/80 dark:bg-gray-800/80 dark:text-gray-400">
+                <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 font-mono text-[10px] font-semibold text-gray-400 sm:inline-flex dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-500">
                   ⌘K
                 </kbd>
               )}
 
-              {/* Search Results Dropdown */}
+              {/* Search Results */}
               {isSearchOpen && (
                 <div
                   className={cn(
-                    'absolute left-0 right-0 top-11.5 z-50 overflow-hidden rounded-2xl',
-                    'border border-gray-200/90 bg-white/95 dark:border-gray-800 dark:bg-[#0f1117]/95 backdrop-blur-xl',
-                    'shadow-2xl shadow-gray-950/15',
+                    'absolute left-0 right-0 top-11 z-50 overflow-hidden rounded-2xl',
+                    'border border-gray-200/90 bg-white dark:border-white/[0.08] dark:bg-surface-dark-card',
+                    'shadow-2xl shadow-gray-950/10 dark:shadow-black/40',
                     'animate-dropdown-enter',
                   )}
                 >
-                  <div className="border-b border-gray-100 dark:border-gray-800/60 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  <div className="border-b border-gray-100 dark:border-white/[0.06] px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     Quick Navigation
                   </div>
 
@@ -729,7 +707,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       </p>
                     </div>
                   ) : (
-                    <ul className="max-h-64 overflow-y-auto divide-y divide-gray-100/60 dark:divide-gray-800/60 p-1">
+                    <ul className="max-h-64 overflow-y-auto divide-y divide-gray-50 dark:divide-white/[0.04] p-1">
                       {filteredMenuItems.map((item) => {
                         const Icon = ICON_MAP[item.icon] ?? Layers;
                         return (
@@ -748,7 +726,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               )}
                             >
                               <span className="flex min-w-0 items-center gap-3">
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 dark:bg-white/[0.06] dark:text-gray-400">
                                   <Icon className="h-4 w-4" />
                                 </span>
                                 <span className="min-w-0">
@@ -774,9 +752,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </div>
           </div>
 
-          {/* Right Header Controls: Fullscreen, Notifications, Theme, Profile */}
-          <div className="flex shrink-0 items-center gap-2">
-            {/* Fullscreen Toggle */}
+          {/* Right Header Controls */}
+          <div className="flex shrink-0 items-center gap-1.5">
+            {/* Fullscreen */}
             <button
               type="button"
               onClick={toggleFullscreen}
@@ -784,9 +762,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
               className={cn(
                 'hidden sm:flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl',
-                'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
-                'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800',
-                'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white',
+                'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
+                'dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/[0.06]',
                 'transition-all duration-150',
               )}
             >
@@ -797,7 +774,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               )}
             </button>
 
-            {/* Notification Bell with Badge */}
+            {/* Notifications */}
             <div ref={notificationsRef} className="relative">
               <button
                 type="button"
@@ -806,33 +783,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 aria-expanded={isNotificationsOpen}
                 className={cn(
                   'relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl',
-                  'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
-                  'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800',
-                  'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white',
+                  'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
+                  'dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/[0.06]',
                   'transition-all duration-150',
-                  isNotificationsOpen &&
-                    'border-brand-300 bg-brand-50/50 text-brand-600 dark:border-brand-800 dark:bg-brand-500/10 dark:text-brand-300',
+                  isNotificationsOpen && 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400',
                 )}
               >
                 <Bell className="h-4 w-4" />
-                {/* Ping notification dot */}
-                <span className="absolute top-2 right-2 flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
+                <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 ring-2 ring-white dark:ring-surface-dark" />
                 </span>
               </button>
 
-              {/* Notification Popover */}
               {isNotificationsOpen && (
                 <div
                   className={cn(
                     'absolute right-0 top-11.5 z-50 w-80 overflow-hidden rounded-2xl',
-                    'border border-gray-200/90 bg-white/95 dark:border-gray-800 dark:bg-[#0f1117]/95 backdrop-blur-xl',
-                    'shadow-2xl shadow-gray-950/15',
+                    'border border-gray-200/90 bg-white dark:border-white/[0.08] dark:bg-surface-dark-card',
+                    'shadow-2xl shadow-gray-950/10 dark:shadow-black/40',
                     'animate-dropdown-enter',
                   )}
                 >
-                  <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-4 py-3">
+                  <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/[0.06] px-4 py-3">
                     <span className="text-xs font-bold text-gray-900 dark:text-white">
                       Notifications
                     </span>
@@ -840,7 +813,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       Live Updates
                     </span>
                   </div>
-                  <div className="p-4 text-center">
+                  <div className="p-5 text-center">
                     <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
                       <Sparkles className="h-5 w-5" />
                     </div>
@@ -855,7 +828,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               )}
             </div>
 
-            {/* Dark/Light Mode Theme Toggle with Rotation Transition */}
+            {/* Theme Toggle */}
             <button
               type="button"
               onClick={() => dispatch(toggleTheme())}
@@ -863,23 +836,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               className={cn(
                 'flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl',
-                'border border-gray-200/80 bg-white text-gray-500 shadow-xs',
-                'hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800',
-                'dark:border-gray-800 dark:bg-white/2 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white',
+                'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
+                'dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/[0.06]',
                 'transition-all duration-300',
               )}
             >
               {theme === 'dark' ? (
-                <Sun className="h-4 w-4 transition-transform duration-500 rotate-0 hover:rotate-90 text-amber-400" />
+                <Sun className="h-4 w-4 transition-transform duration-500 hover:rotate-90 text-amber-400" />
               ) : (
-                <Moon className="h-4 w-4 transition-transform duration-300 hover:-rotate-12 text-slate-700" />
+                <Moon className="h-4 w-4 transition-transform duration-300 hover:-rotate-12 text-slate-600" />
               )}
             </button>
 
             {/* Divider */}
-            <div className="h-5 w-px bg-gray-200 dark:bg-gray-800 mx-0.5" />
+            <div className="h-5 w-px bg-gray-200 dark:bg-white/[0.08] mx-0.5" />
 
-            {/* ── User Profile Dropdown ──────────────────────────────────── */}
+            {/* User Profile */}
             <div ref={userMenuRef} className="relative">
               <button
                 type="button"
@@ -887,33 +859,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 aria-expanded={isUserMenuOpen}
                 aria-haspopup="menu"
                 className={cn(
-                  'flex cursor-pointer items-center gap-2.5 rounded-xl p-1 sm:pr-2.5',
-                  'border border-transparent hover:border-gray-200/80 hover:bg-gray-50/80',
-                  'dark:hover:border-gray-800 dark:hover:bg-white/4',
+                  'flex cursor-pointer items-center gap-2 rounded-xl p-1 sm:pr-2.5',
+                  'hover:bg-gray-50 dark:hover:bg-white/[0.04]',
                   'transition-all duration-150',
-                  isUserMenuOpen &&
-                    'border-gray-200/80 bg-gray-50/80 dark:border-gray-800 dark:bg-white/4',
+                  isUserMenuOpen && 'bg-gray-50 dark:bg-white/[0.04]',
                 )}
               >
-                {/* Avatar with Status Ring */}
                 <div className="relative">
                   {user?.avatar_url ? (
                     <img
                       src={user.avatar_url}
                       alt={user.name}
-                      className="h-8 w-8 shrink-0 rounded-xl object-cover ring-2 ring-brand-500/30"
+                      className="h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-brand-500/20"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm shadow-brand-500/20">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 text-xs font-bold text-white shadow-sm">
                       {userInitials}
                     </div>
                   )}
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-gray-900" />
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-surface-dark" />
                 </div>
 
-                {/* Name */}
                 <div className="hidden sm:block text-left leading-tight">
-                  <p className="max-w-30 truncate text-xs font-semibold text-gray-800 dark:text-gray-200">
+                  <p className="max-w-28 truncate text-xs font-semibold text-gray-800 dark:text-gray-200">
                     {user?.name ?? 'User'}
                   </p>
                   <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500">
@@ -929,28 +897,28 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 />
               </button>
 
-              {/* Profile Popover Menu */}
+              {/* Profile Dropdown */}
               {isUserMenuOpen && (
                 <div
                   role="menu"
                   className={cn(
-                    'absolute right-0 top-11.5 z-50 w-68 overflow-hidden rounded-2xl',
-                    'border border-gray-200/90 bg-white/95 dark:border-gray-800 dark:bg-[#0f1117]/95 backdrop-blur-xl',
-                    'shadow-2xl shadow-gray-950/15',
+                    'absolute right-0 top-11.5 z-50 w-64 overflow-hidden rounded-2xl',
+                    'border border-gray-200/90 bg-white dark:border-white/[0.08] dark:bg-surface-dark-card',
+                    'shadow-2xl shadow-gray-950/10 dark:shadow-black/40',
                     'animate-dropdown-enter',
                   )}
                 >
-                  {/* Top user badge */}
-                  <div className="bg-linear-to-br from-brand-50/80 via-white to-indigo-50/60 p-4 dark:from-brand-950/40 dark:via-gray-900 dark:to-indigo-950/30 border-b border-gray-100 dark:border-gray-800/60">
+                  {/* User badge area */}
+                  <div className="p-4 border-b border-gray-100 dark:border-white/[0.06]">
                     <div className="flex items-center gap-3">
                       {user?.avatar_url ? (
                         <img
                           src={user.avatar_url}
                           alt={user.name}
-                          className="h-10 w-10 shrink-0 rounded-xl object-cover ring-2 ring-white dark:ring-gray-800 shadow-sm"
+                          className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-white dark:ring-gray-800 shadow-sm"
                         />
                       ) : (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-tr from-brand-500 to-indigo-600 text-sm font-bold text-white shadow-md shadow-brand-500/20">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 text-sm font-bold text-white shadow-md">
                           {userInitials}
                         </div>
                       )}
@@ -962,7 +930,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           {user?.email ?? 'user@pln.co.id'}
                         </p>
                         {user?.roles?.[0]?.name && (
-                          <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-brand-100/80 px-1.5 py-0.5 text-[9px] font-bold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
+                          <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-brand-50 px-1.5 py-0.5 text-[9px] font-bold text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
                             <Sparkles className="h-2.5 w-2.5" />
                             {user.roles[0].name}
                           </span>
@@ -971,7 +939,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     </div>
                   </div>
 
-                  {/* Navigation Links inside Profile */}
+                  {/* Links */}
                   <div className="p-1.5 space-y-0.5">
                     <Link
                       to="/admin/auth"
@@ -979,11 +947,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       onClick={() => setIsUserMenuOpen(false)}
                       className={cn(
                         'flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium',
-                        'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5',
+                        'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.04] dark:hover:text-white',
                         'transition-colors duration-150',
                       )}
                     >
-                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400">
                         <KeyRound className="h-3.5 w-3.5" />
                       </span>
                       <span>Auth & Session Profile</span>
@@ -995,19 +963,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       onClick={() => setIsUserMenuOpen(false)}
                       className={cn(
                         'flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium',
-                        'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5',
+                        'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.04] dark:hover:text-white',
                         'transition-colors duration-150',
                       )}
                     >
-                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400">
                         <UserCheck className="h-3.5 w-3.5" />
                       </span>
                       <span>User Management</span>
                     </Link>
                   </div>
 
-                  {/* Logout Button */}
-                  <div className="border-t border-gray-100 p-1.5 dark:border-gray-800/60">
+                  {/* Logout */}
+                  <div className="border-t border-gray-100 p-1.5 dark:border-white/[0.06]">
                     <button
                       type="button"
                       role="menuitem"
@@ -1030,13 +998,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </header>
 
-        {/* ── Main Viewport Content ───────────────────────────────────────── */}
+        {/* ── Main Content ───────────────────────────────────────────── */}
         <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          {/* ── Modern Breadcrumb Trail ─────────────────────────────────── */}
-          <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-1.5 text-xs">
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-1.5 text-xs">
             <Link
               to="/admin"
-              className="flex items-center gap-1 text-gray-400 hover:text-brand-600 dark:text-gray-500 dark:hover:text-brand-300 transition-colors"
+              className="flex items-center gap-1 text-gray-400 hover:text-brand-600 dark:text-gray-500 dark:hover:text-brand-400 transition-colors"
             >
               <Home className="h-3.5 w-3.5" />
               <span className="sr-only">Home</span>
@@ -1071,7 +1039,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             })}
           </nav>
 
-          {/* ── Page Content Container with Smooth Enter Animation ───────── */}
+          {/* Page Content */}
           <div key={location.pathname} className="animate-page-enter">
             {children}
           </div>

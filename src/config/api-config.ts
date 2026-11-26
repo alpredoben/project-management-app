@@ -53,6 +53,22 @@ export const API_ENDPOINTS  = {
         UPDATE: (id: string | null) => pathById('project-status/update', id),
         DELETE: (id: string | null) => pathById('project-status/delete', id),
     },
+    PROJECT: {
+        LIST: 'projects/list',
+        FIND: (id: string | null) => pathById('projects/find', id),
+        CREATE: 'projects/create',
+        UPDATE: (id: string | null) => pathById('projects/update', id),
+        DELETE: (id: string | null) => pathById('projects/delete', id),
+        CHANGE_STATUS: (id: string | null) => `project/${id}/change-status`,
+        CHANGE_TYPE: (id: string | null) => `project/${id}/change-type`,
+    },
+    MILESTONE: {
+        LIST: 'milestone/list',
+        FIND: (id: string | null) => pathById('milestone/find', id),
+        CREATE: 'milestone/create',
+        UPDATE: (id: string | null) => pathById('milestone/update', id),
+        DELETE: (id: string | null) => pathById('milestone/delete', id),
+    },
     WORKSPACE: {
         LIST: 'workspace/list',
         FIND: (id: string | null) => pathById('workspace/find', id),

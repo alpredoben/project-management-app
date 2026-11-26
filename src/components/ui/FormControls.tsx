@@ -35,7 +35,7 @@ function FieldWrapper({ label, error, hint, id, errorId, required, children }: F
 }
 
 const controlBaseClass =
-  'w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-xs transition-colors focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500 dark:focus:border-brand-700 dark:disabled:bg-gray-800/60';
+  'w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-xs transition-all focus:border-brand-400 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 dark:border-white/[0.1] dark:bg-white/[0.04] dark:text-white/90 dark:placeholder:text-gray-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/15 dark:disabled:bg-white/[0.02]';
 
 interface InputProps extends ComponentPropsWithoutRef<'input'> {
   label: string;

@@ -32,12 +32,12 @@ export function ToastContainer() {
           key={toast.id}
           role="status"
           className={cn(
-            'pointer-events-auto flex items-start gap-3 rounded-xl border bg-white p-3.5 shadow-lg dark:bg-slate-900',
+            'pointer-events-auto flex items-start gap-3 rounded-2xl border bg-white p-4 shadow-lg dark:bg-surface-dark-card',
             toast.variant === 'error'
-              ? 'border-red-200 dark:border-red-900/60'
+              ? 'border-red-200 dark:border-red-900/40'
               : toast.variant === 'success'
-                ? 'border-emerald-200 dark:border-emerald-900/60'
-                : 'border-slate-200 dark:border-slate-800',
+                ? 'border-emerald-200 dark:border-emerald-900/40'
+                : 'border-gray-200 dark:border-white/[0.08]',
           )}
         >
           {toast.variant === 'success' && (
@@ -50,16 +50,16 @@ export function ToastContainer() {
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{toast.title}</p>
+            <p className="text-xs font-semibold text-gray-900 dark:text-white">{toast.title}</p>
             {toast.description && (
-              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{toast.description}</p>
+              <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{toast.description}</p>
             )}
           </div>
           <button
             type="button"
             onClick={() => dispatch(dismissToast(toast.id))}
             aria-label="Dismiss notification"
-            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
+            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/[0.06] dark:hover:text-gray-200 cursor-pointer"
           >
             <X className="h-3.5 w-3.5" />
           </button>

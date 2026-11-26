@@ -20,6 +20,16 @@ export const ROUTE_PATH_LIST = {
         WORKSPACE_MEMBERS: 'admin/workspace-members',
         WORKSPACE_MEMBERS_DETAIL: (id: string = ':id') => `admin/workspace-members/${id}`,
     },
+    PROJECT: {
+        PROJECT: 'admin/projects',
+        PROJECT_DETAIL: (id: string = ':id') => `admin/projects/${id}`,
+        MILESTONE: 'admin/milestones',
+        MILESTONE_DETAIL: (id: string = ':id') => `admin/milestones/${id}`,
+    },
+    MILESTONE: {
+        MILESTONE: 'admin/milestones',
+        MILESTONE_DETAIL: (id: string = ':id') => `admin/milestones/${id}`,
+    },
     ACCESS_CONTROL: {
         USER: 'admin/users',
         ROLE: 'admin/roles',

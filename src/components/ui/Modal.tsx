@@ -40,7 +40,6 @@ export function Modal({
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Lock body scrolling while modal is active
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -55,7 +54,7 @@ export function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/50 backdrop-blur-sm transition-opacity duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -65,11 +64,15 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          'w-full rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 transition-all duration-200',
+          'w-full rounded-2xl border bg-white shadow-2xl transition-all duration-200',
+          'border-gray-200/80',
+          'dark:border-white/[0.08] dark:bg-surface-dark-card',
+          'dark:shadow-black/40',
           sizeClasses[size],
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-gray-100 bg-gray-50/50 px-6 py-4.5 dark:border-gray-800 dark:bg-white/[0.02]">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-4.5 dark:border-white/[0.06]">
           <div>
             <h2 id={titleId} className="font-display text-base font-semibold text-gray-900 dark:text-white/95">
               {title}
@@ -82,14 +85,18 @@ export function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
+            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/[0.06] dark:hover:text-gray-200 transition-colors cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
+
+        {/* Body */}
         <div className="max-h-[calc(85vh-8rem)] overflow-y-auto px-6 py-5">{children}</div>
+
+        {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-2.5 border-t border-gray-100 bg-gray-50/50 px-6 py-3.5 dark:border-gray-800 dark:bg-white/[0.02]">
+          <div className="flex items-center justify-end gap-2.5 border-t border-gray-100 px-6 py-3.5 dark:border-white/[0.06]">
             {footer}
           </div>
         )}

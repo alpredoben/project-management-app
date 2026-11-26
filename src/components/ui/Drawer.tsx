@@ -20,7 +20,6 @@ export function Drawer({ isOpen, onClose, title, subtitle, children }: DrawerPro
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Prevent body scrolling behind the drawer
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -35,7 +34,7 @@ export function Drawer({ isOpen, onClose, title, subtitle, children }: DrawerPro
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex justify-end bg-slate-950/60 backdrop-blur-xs transition-opacity duration-200"
+      className="fixed inset-0 z-[100] flex justify-end bg-slate-950/50 backdrop-blur-sm transition-opacity duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -44,9 +43,9 @@ export function Drawer({ isOpen, onClose, title, subtitle, children }: DrawerPro
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="flex h-screen w-full max-w-xl sm:max-w-2xl flex-col border-l border-gray-200 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 transition-transform duration-200 ease-out"
+        className="flex h-screen w-full max-w-xl sm:max-w-2xl flex-col border-l border-gray-200 bg-white shadow-2xl dark:border-white/[0.08] dark:bg-surface-dark-card transition-transform duration-200 ease-out"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-gray-100 bg-gray-50/50 px-6 py-4.5 dark:border-gray-800 dark:bg-white/[0.02]">
+        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-4.5 dark:border-white/[0.06]">
           <div className="min-w-0 flex-1">
             <h2 id={titleId} className="font-display text-base font-semibold text-gray-900 dark:text-white/95 truncate">
               {title}
@@ -61,7 +60,7 @@ export function Drawer({ isOpen, onClose, title, subtitle, children }: DrawerPro
             type="button"
             onClick={onClose}
             aria-label="Close detail panel"
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
+            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/[0.06] dark:hover:text-gray-200 transition-colors cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>

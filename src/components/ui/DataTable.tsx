@@ -50,7 +50,7 @@ export function DataTable<T>({
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-white p-8 text-center dark:border-red-900/50 dark:bg-gray-900">
+      <div className="rounded-2xl border border-red-200 bg-white p-8 text-center dark:border-red-900/40 dark:bg-surface-dark-card">
         <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-950/60 dark:text-red-400">
           <AlertCircle className="h-5 w-5" />
         </div>
@@ -71,9 +71,9 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-surface-dark-card">
       {(searchFilter || toolbarExtra) && (
-        <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800">
+        <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06]">
           {searchFilter ? (
             <div className="relative w-full max-w-xs">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -83,7 +83,7 @@ export function DataTable<T>({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                className="h-9 w-full rounded-lg border border-gray-200 bg-transparent pl-9 pr-3 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
+                className="h-9 w-full rounded-xl border border-gray-200 bg-transparent pl-9 pr-3 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-400 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white/90 dark:focus:border-brand-500/60"
               />
             </div>
           ) : (
@@ -99,12 +99,12 @@ export function DataTable<T>({
       )}
 
       {isLoading ? (
-        <div className="divide-y divide-gray-100 dark:divide-gray-800">
+        <div className="divide-y divide-gray-100 dark:divide-white/[0.04]">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div key={idx} className="flex items-center gap-4 px-5 py-3.5">
-              <div className="h-4 w-32 animate-pulse rounded bg-gray-100 dark:bg-gray-800" />
-              <div className="h-4 flex-1 animate-pulse rounded bg-gray-100 dark:bg-gray-800" />
-              <div className="h-4 w-24 animate-pulse rounded bg-gray-100 dark:bg-gray-800" />
+              <div className="h-4 w-32 animate-pulse rounded bg-gray-100 dark:bg-white/[0.06]" />
+              <div className="h-4 flex-1 animate-pulse rounded bg-gray-100 dark:bg-white/[0.06]" />
+              <div className="h-4 w-24 animate-pulse rounded bg-gray-100 dark:bg-white/[0.06]" />
             </div>
           ))}
         </div>
@@ -124,7 +124,7 @@ export function DataTable<T>({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/60 text-xs font-medium text-gray-500 dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400">
+              <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-medium text-gray-500 dark:border-white/[0.04] dark:bg-white/[0.02] dark:text-gray-400">
                 {columns.map((col) => (
                   <th
                     key={col.key}
@@ -140,11 +140,11 @@ export function DataTable<T>({
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.04]">
               {filteredData.map((row) => (
                 <tr
                   key={getRowKey(row)}
-                  className="transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.02]"
+                  className="transition-colors hover:bg-gray-50/50 dark:hover:bg-white/[0.02]"
                 >
                   {columns.map((col) => (
                     <td

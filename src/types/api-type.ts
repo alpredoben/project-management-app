@@ -183,6 +183,80 @@ export interface In_ProjectStatus {
   updated_at: string;
 }
 
+export interface In_ProjectWorkspace {
+  id: string;
+  name: string;
+  slug?: string | null;
+  logo_url?: string | null;
+}
+
+export interface In_ProjectProjectType {
+  id: string;
+  name: string;
+  description?: string | null;
+}
+
+export interface In_ProjectProjectStatus {
+  id: string;
+  name: string;
+  color_code?: string | null;
+  sequence_order?: number | null;
+  description?: string | null;
+}
+
+export interface In_Project {
+  id: string;
+  workspace_id?: string | null;
+  workspace?: In_ProjectWorkspace | null;
+  project_type_id?: string | null;
+  project_type?: In_ProjectProjectType | null;
+  project_status_id?: string | null;
+  project_status?: In_ProjectProjectStatus | null;
+  name: string;
+  key?: string | null;
+  description?: string | null;
+  start_date: string;
+  end_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface In_ProjectQueryParam extends In_QueryParam {
+  workspace_id?: string;
+  project_status_id?: string;
+  project_type_id?: string;
+}
+
+export interface In_MilestoneProject {
+  id: string;
+  name: string;
+  description?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export type T_MilestoneStatus = 'open' | 'finish' | string;
+
+export interface In_Milestone {
+  id: string;
+  project_id?: string | null;
+  project?: In_MilestoneProject | null;
+  title: string;
+  description?: string | null;
+  status?: T_MilestoneStatus | null;
+  created_at: string;
+  updated_at: string;
+  created_by?: string | null;
+  updated_by?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+}
+
+export interface In_MilestoneQueryParam extends In_QueryParam {
+  project_id?: string;
+  status?: string;
+}
+
 export interface In_Workspace {
   id: string;
   name: string;
