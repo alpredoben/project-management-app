@@ -326,3 +326,98 @@ export interface In_WorkspaceMember {
   created_at: string;
   updated_at: string;
 }
+
+export type T_TaskPriority = 'low' | 'medium' | 'high' | 'urgent' | string;
+
+export interface In_TaskProject {
+  id: string;
+  name: string;
+  key?: string | null;
+}
+
+export interface In_TaskMilestone {
+  id: string;
+  title: string;
+}
+
+export interface In_TaskTypeRef {
+  id: string;
+  name: string;
+  description?: string | null;
+}
+
+export interface In_TaskStatusRef {
+  id: string;
+  name: string;
+  color_code?: string | null;
+  sequence_order?: number | null;
+}
+
+export interface In_Task {
+  id: string;
+  project_id?: string | null;
+  project?: In_TaskProject | null;
+  milestone_id?: string | null;
+  milestone?: In_TaskMilestone | null;
+  task_type_id?: string | null;
+  task_type?: In_TaskTypeRef | null;
+  task_status_id?: string | null;
+  task_status?: In_TaskStatusRef | null;
+  user_requested_id?: string | null;
+  task_key?: string | null;
+  title: string;
+  description?: string | null;
+  priority: T_TaskPriority;
+  estimated_hours?: string | number | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  mom_number?: string | null;
+  mom_date?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface In_TaskQueryParam extends In_QueryParam {
+  project_id?: string;
+  milestone_id?: string;
+  task_type_id?: string;
+  task_status_id?: string;
+  priority?: string;
+}
+
+export interface In_TaskStatusSummary {
+  id: string;
+  name: string;
+  color_code?: string | null;
+}
+
+export interface In_TaskAssignerUser {
+  id: string;
+  name: string;
+  avatar_url?: string | null;
+}
+
+export interface In_TaskAssigner {
+  id: string;
+  user?: In_TaskAssignerUser | null;
+  name?: string;
+  avatar_url?: string | null;
+}
+
+export interface In_TaskTrackingItem {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  task_type?: In_TaskTypeRef | null;
+  task_status?: In_TaskStatusRef | null;
+  task_assigners?: In_TaskAssigner[];
+  task_key?: string | null;
+  title: string;
+  description?: string | null;
+  priority?: T_TaskPriority | null;
+  estimated_hours?: string | number | null;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+

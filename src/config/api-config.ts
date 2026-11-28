@@ -61,6 +61,7 @@ export const API_ENDPOINTS  = {
         DELETE: (id: string | null) => pathById('projects/delete', id),
         CHANGE_STATUS: (id: string | null) => `project/${id}/change-status`,
         CHANGE_TYPE: (id: string | null) => `project/${id}/change-type`,
+        TASK_TRACKING: (projectId: string | null) => pathById('projects/task-tracking', projectId),
     },
     MILESTONE: {
         LIST: 'milestone/list',
@@ -68,6 +69,13 @@ export const API_ENDPOINTS  = {
         CREATE: 'milestone/create',
         UPDATE: (id: string | null) => pathById('milestone/update', id),
         DELETE: (id: string | null) => pathById('milestone/delete', id),
+    },
+    TASK: {
+        LIST: 'tasks/list',
+        FIND: (id: string | null) => pathById('tasks/find', id),
+        CREATE: 'tasks/create',
+        UPDATE: (id: string | null) => pathById('tasks/update', id),
+        DELETE: (id: string | null) => pathById('tasks/delete', id),
     },
     WORKSPACE: {
         LIST: 'workspace/list',
@@ -77,6 +85,7 @@ export const API_ENDPOINTS  = {
         DELETE: (id: string | null) => pathById('workspace/delete', id),
     },
     TASK_STATUS: {
+        ALL: 'task-status/all',
         LIST: 'task-status/list',
         FIND: (id: string | null) => pathById('task-status/find', id),
         CREATE: 'task-status/create',

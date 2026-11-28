@@ -41,6 +41,27 @@ const payloadOfMutation = (
 
 export const taskStatusApi = {
   query: {
+    useFetchAll: () => {
+      return useQuery({
+        queryKey: [...taskStatusKey.all, 'all'] as const,
+        queryFn: async ({ signal }): Promise<Array<{ id: string; name: string; color_code?: string | null }>> => {
+          const res = await httpRequest<unknown>(
+            getApiUrl(API_ENDPOINTS.TASK_STATUS.ALL),
+            { signal },
+          );
+          return z
+            .array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+                color_code: z.string().nullable().optional().default(''),
+              }).passthrough(),
+            )
+            .parse(res.data);
+        },
+      });
+    },
+
     useFetchPaginationList: (params?: In_QueryParam) => {
       return useQuery({
         queryKey: taskStatusKey.list(params),

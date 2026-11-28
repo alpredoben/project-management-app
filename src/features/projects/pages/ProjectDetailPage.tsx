@@ -12,6 +12,7 @@ import {
   Clock,
   FolderKanban,
   GitBranch,
+  Kanban,
   Pencil,
   RotateCcw,
   Search,
@@ -497,6 +498,16 @@ export function ProjectDetailPage() {
           <Button variant="outline" onClick={goBack} className="gap-1.5">
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate(slashed(ROUTE_PATH_LIST.PROJECT.TASK_TRACKING(id)))
+            }
+            className="gap-1.5"
+          >
+            <Kanban className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Task Tracking</span>
           </Button>
           <Button
             variant="outline"

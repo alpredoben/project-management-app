@@ -23,12 +23,17 @@ export const ROUTE_PATH_LIST = {
     PROJECT: {
         PROJECT: 'admin/projects',
         PROJECT_DETAIL: (id: string = ':id') => `admin/projects/${id}`,
+        TASK_TRACKING: (id: string = ':id') => `admin/projects/${id}/task-tracking`,
         MILESTONE: 'admin/milestones',
         MILESTONE_DETAIL: (id: string = ':id') => `admin/milestones/${id}`,
     },
     MILESTONE: {
         MILESTONE: 'admin/milestones',
         MILESTONE_DETAIL: (id: string = ':id') => `admin/milestones/${id}`,
+    },
+    TASK: {
+        TASK: 'admin/tasks',
+        TASK_DETAIL: (id: string = ':id') => `admin/tasks/${id}`,
     },
     ACCESS_CONTROL: {
         USER: 'admin/users',

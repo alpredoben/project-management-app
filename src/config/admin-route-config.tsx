@@ -160,6 +160,20 @@ export const ADMIN_ROUTE_LIST: readonly In_AdminRouteNode[] = [
             ),
             items: [],
           },
+          {
+            id: "project-task-tracking",
+            label: "Task Tracking",
+            path: slashed(ROUTE_PATH_LIST.PROJECT.TASK_TRACKING()),
+            title: "Task Tracking",
+            description: "Kanban board for tracking project tasks by status.",
+            icon: "tasks",
+            apiPrefix: "/api/v1/projects/task-tracking",
+            component: lazyPage(
+              () => import("@/features/tasks/pages/TaskTrackingPage"),
+              "TaskTrackingPage",
+            ),
+            items: [],
+          },
         ],
       },
       {
@@ -187,6 +201,36 @@ export const ADMIN_ROUTE_LIST: readonly In_AdminRouteNode[] = [
             component: lazyPage(
               () => import("@/features/milestone/pages/MilestoneDetailPage"),
               "MilestoneDetailPage",
+            ),
+            items: [],
+          },
+        ],
+      },
+      {
+        id: "tasks",
+        label: "Tasks",
+        path: slashed(ROUTE_PATH_LIST.TASK.TASK),
+        title: "Tasks",
+        description:
+          "Track engineering tasks, priorities, timelines, and deliverables across projects.",
+        icon: "tasks",
+        apiPrefix: "/api/v1/tasks",
+        component: lazyPage(
+          () => import("@/features/tasks/pages/TaskPage"),
+          "TaskPage",
+        ),
+        items: [
+          {
+            id: "task-detail",
+            label: "Task Detail",
+            path: slashed(ROUTE_PATH_LIST.TASK.TASK_DETAIL()),
+            title: "Task Detail",
+            description: "Detail of task.",
+            icon: "tasks",
+            apiPrefix: "/api/v1/tasks",
+            component: lazyPage(
+              () => import("@/features/tasks/pages/TaskDetailPage"),
+              "TaskDetailPage",
             ),
             items: [],
           },
